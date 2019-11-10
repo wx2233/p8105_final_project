@@ -12,7 +12,15 @@ Guangling Xu(gx2144), Weijia Xiong(wx2233), Fangming Jin(fj2269), Siying Li (sl4
 
 **Proposal:**  
 
+We find it interesting to look at New York city motor vehicle collision data. Traffic is very heavy in New York, and many people relay on motor vehicles for transportation. Car crashes happens every single day. We want to look at patterns and association between car crashes and different variables, such as vehicle type or accident location. Maybe a certain type of vehicle tends to have more accident rate? In addition, we want to analyze number/types of people injured and how it relates to location and time of day.  
 
+The data comes from https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions-Crashes/h9gi-nx95. This Motor Vehicle Collisions data tables contain information from all police reported motor vehicle collisions in NYC. Each row represents a collision event. We use the data in 2018 for this project. 
+
+We plan to analyze the collision events by occurrence time, occurrence location, different vehicles types etc. Latitude, longitude and location could be used as data for mapping. Also, street names could be used on map to define which place has the most motor vehicle collisions. Categorical data such as contributing factor, vehicle type etc. could be related to numeric data such as number of people killed, number of pedestrians injured or killed, number of cyclists by using proper plots. 
+
+Since the data has too many columns and rows, we would have to filter the data. Also, there are too many factors contributed to collision events, which leads to the difficulties for us to gain the main reasons. 
+
+We will start our work on November 8th and complete a detailed report including all work we do around November 28th. After that, we will build up a website and generate video from November 28th to December 1st. Then we spend three days reviewing our work, hand in the report and website before December 5th.  In the process of reviewing, we will also finish peer assessment. 
 
 
 
