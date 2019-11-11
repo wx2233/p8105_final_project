@@ -1,12 +1,14 @@
 ---
-title: "clean_data"
-author: "Guangling Xu"
+title: "Final Project"
 date: "2019/11/10"
-output: github_document
+output: html_document
 ---
 
 ```{r}
 library(tidyverse)
+library(plotly)
+library(rvest)
+library(readr)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -24,28 +26,77 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
 ```{r}
-data_2018 =
+data_2018 = 
   read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
 newnames = colnames(data_2018) %>% 
   str_replace("number_of_","") 
 names(data_2018) = newnames
 
-data_2018 = data_2018 %>% 
-  select(-zip_code, -on_street_name, -location, -cross_street_name, -off_street_name,-collision_id) %>% 
-  separate(date, into = c("day_of_month", "month", "year"), sep="/") %>% 
-  select(-year) %>% 
-  separate(time, into = c("hour_of_day", "minute"), sep=":") 
+tidy_data = 
+data_2018 %>% 
+  separate(date, into = c("day", "month", "year"), sep = "/") %>% 
+  separate(time, into = c("hour", "minute"), sep = ":") %>%
+  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
+  rename("vehicle_type" = "vehicle_type_code_1") %>% 
+  mutate( day = as.numeric(day),
+          month = as.numeric(month),
+          hour = as.numeric(hour),
+          minute = as.numeric(minute),
+          latitude = replace_na(latitude,0),
+          vehicle_type = str_to_lower(vehicle_type)
+  ) %>%
+  filter( latitude != 0)
   
-data_2018 = data_2018 %>% mutate(
-    day_of_month = as.numeric(day_of_month),
-    month = as.numeric(month),
-    hour_of_day = as.numeric(hour_of_day),
-    minute = as.numeric(minute),
-    latitude = replace_na(latitude, 0)
-  ) %>% 
-  filter(latitude != 0) %>% 
-  arrange(vehicle_type_code_1)
   
+```
+
+
+### Vehicle type
+```{r}
+vehicle_type_data = 
+  tidy_data %>% 
+  mutate(
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle")
+    ) %>% 
+  filter( vehicle_type %in% c("taxi","passenger vehicle","truck","sport utility vehicle")) %>% 
+  group_by(vehicle_type,hour) %>% 
+  summarize(
+    n = n()
+  )
+
+vehicle_type_data %>% 
+  plot_ly(
+    x = ~hour, y = ~n, color = ~vehicle_type, type = "scatter", mode = "line") %>% 
+  layout(
+    title = "Collisions of Day for Different Vehicles",
+    xaxis = list(title = "Hour of Day"),
+    yaxis = list(title = "Collisions")
+    )
+  
+```
+
+
+### Top 8 Collision Reason
+```{r}
+reason_data = 
+  tidy_data %>%
+  group_by(contributing_factor_vehicle_1) %>%
+  summarize(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  head(8)
+
+reason_data %>% 
+  plot_ly(x = ~reorder(contributing_factor_vehicle_1,desc(n)), y = ~n, color = ~contributing_factor_vehicle_1 ,type = "bar") %>% 
+  layout(
+    title = "The Number of Items Ordered in Each Aisle",
+    xaxis = list(title = "Each aisle"),
+    yaxis = list(title = "Count")
+    )
+
+```
+
+
 ```
 
