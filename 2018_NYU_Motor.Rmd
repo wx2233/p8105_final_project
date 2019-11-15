@@ -9,6 +9,8 @@ library(tidyverse)
 library(plotly)
 library(rvest)
 library(readr)
+library(viridis)
+library(leaflet)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -98,11 +100,6 @@ reason_data %>%
 ```
 
 ## Mapping
-
-```{r}
-library(viridis)
-library(leaflet)
-```
 
 ```{r}
 data_2018 = tidy_data
