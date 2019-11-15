@@ -110,13 +110,11 @@ pal <- colorNumeric(
   palette = "viridis",
   domain = data_2018$persons_injured)
 
-
-
 data_2018 %>% 
   filter(!(lat < "-70" | lat >= "-75")) %>% 
   filter(persons_injured > 2) %>% 
     mutate(
-    label = str_c("<b>vehicle type: ", vehicle_type_code_1, "</b><br>Month: ", month , sep = "") ) %>% 
+    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>% 
   sample_n(2000) %>% 
   leaflet() %>% 
   addTiles() %>%
