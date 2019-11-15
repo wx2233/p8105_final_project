@@ -35,7 +35,7 @@ names(data_2018) = newnames
 
 tidy_data = 
 data_2018 %>% 
-  separate(date, into = c("day", "month", "year"), sep = "/") %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
   separate(time, into = c("hour", "minute"), sep = ":") %>%
   select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
   rename("vehicle_type" = "vehicle_type_code_1") %>% 
@@ -97,6 +97,49 @@ reason_data %>%
 
 ```
 
+## Mapping
+
+```{r}
+library(viridis)
+library(leaflet)
+```
+
+```{r}
+data_2018 = tidy_data
+
+data_2018 = rename(data_2018, long = latitude, lat = longitude)
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = data_2018$persons_injured)
+
+
+
+data_2018 %>% 
+  filter(!(lat < "-70" | lat >= "-75")) %>% 
+  filter(persons_injured > 2) %>% 
+    mutate(
+    label = str_c("<b>vehicle type: ", vehicle_type_code_1, "</b><br>Month: ", month , sep = "") ) %>% 
+  sample_n(2000) %>% 
+  leaflet() %>% 
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = pal, values = ~persons_injured,
+    title = "Persons Injured",
+    opacity = 1
+  ) %>% 
+  addCircleMarkers(
+    ~lat, ~long,
+    color = ~pal(persons_injured),
+    radius = 0.5,
+    popup = ~ label) 
+
+data_2018 %>% 
+  group_by(borough) %>% 
+  summarise(n())
 
 ```
+
+
+
 
