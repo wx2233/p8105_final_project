@@ -236,5 +236,45 @@ plot_kill_injured_day
 plot_kill_injured_day = ggplotly(plot_kill_injured_day)
 plot_kill_injured_day
 ```
+
+
+## proportion of accident and injured people by borough, by hour
+
+```{r}
+boro_plot = tidy_data %>% 
+  drop_na(borough, persons_injured, persons_killed) %>%
+  group_by(borough) %>%
+  summarize(accident = n(),
+            injured = sum(persons_injured)) %>%
+  mutate(prop_accident = round(accident/sum(accident),4),
+         prop_injured = round(injured/sum(injured),4)) %>%
+  mutate(text_label1 = str_c("accident: ", accident), 
+         text_label2 = str_c("injured: ", injured)) %>% 
+  plot_ly(x = ~borough, y = ~prop_accident, type = 'bar', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
+  add_trace(x = ~borough, y = ~prop_injured, type = 'bar', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
+  layout(title="proportion of accident and injured people by borough", xaxis = list(title = 'borough'), barmode = 'group', legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
+boro_plot
 ```
+Number of accident and injured people in Brooklyn is greatest comparing with other boroughs. Queen is second. Staten Island have fewest accident and injured people. Manhattan and Bronx is in the middle.
+
+```{r}
+hour_table = tidy_data %>% 
+  drop_na(hour, persons_injured, persons_killed) %>%
+  group_by(hour) %>%
+  summarize(accident = n(),
+            injured = sum(persons_injured)) 
+hour_plot = hour_table %>%
+  mutate(prop_accident = round(accident/sum(accident),4),
+         prop_injured = round(injured/sum(injured),4)) %>%
+  mutate(text_label1 = str_c("accident: ", accident), 
+         text_label2 = str_c("injured: ", injured)) %>% 
+  plot_ly(x = ~hour, y = ~prop_accident, type = 'scatter', mode = 'lines', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
+  add_trace(x = ~hour, y = ~prop_injured, type = 'scatter', mode = 'lines', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
+  layout(title="proportion of accident and injured people by hour", xaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 1, title = 'Hour'), yaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 0.01, title = 'proportion'), legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
+
+hour_plot %>%
+  layout(shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 19, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+```
+Frequency of accident and injured people in the period of 8 am-19 pm is higher than other period of time. Started from 3 am, number of accident and injured people increase and reach a small peak at 8am. At 5pm, it reaches a big peak. then it started to decrease.
+
 
