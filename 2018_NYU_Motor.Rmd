@@ -2,6 +2,8 @@
 title: "Final Project"
 date: "2019/11/10"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
