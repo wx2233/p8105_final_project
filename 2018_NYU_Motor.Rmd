@@ -39,6 +39,9 @@ names(data_2018) = newnames
 
 tidy_data = 
 data_2018 %>% 
+  mutate(
+    date_complete = date 
+  ) %>% 
   separate(date, into = c("month", "day", "year"), sep = "/") %>% 
   separate(time, into = c("hour", "minute"), sep = ":") %>%
   select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
@@ -137,6 +140,101 @@ data_2018 %>%
 
 ```
 
+```{r}
+data_2018_seperate = tidy_data 
+```
 
 
+## 
+```{r}
+data_kill_injured = data_2018_seperate %>% 
+  select(month, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
+
+data_kill_injured$injured  = apply(data_kill_injured[,c(2,4,6,8)],1,sum,na.rm=T)
+data_kill_injured$killed = apply(data_kill_injured[,c(3,5,7,9)],1,sum,na.rm=T)
+
+data_kill_injured = 
+  data_kill_injured %>% 
+  group_by(month) %>% 
+  summarise(
+    sum_injured = sum(injured),
+    sum_killed = sum(killed)
+  ) %>%
+  ungroup() 
+  
+data_kill_injured = data_kill_injured %>% 
+  pivot_longer(
+    sum_injured:sum_killed,
+    names_to = "type",
+    values_to = "number"
+  ) 
+
+```
+
+```{r}
+plot_kill_injured = data_kill_injured %>% 
+  ggplot(aes(x = month, y = number, color = type))+
+           geom_point()+
+           geom_line()+
+  scale_x_continuous(breaks=seq(1, 12, 1),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                "Jun","Jul", "Aug", "Sep", "Oct",
+                                "Nov", "Dec"))+
+  scale_y_continuous(breaks = seq(0,11000,1000))+
+  labs(
+   title = "Trend of People being Injured or Killed through the Year")+
+  theme(axis.title = element_text(size=14,face="bold"),
+        plot.title = element_text(hjust = 0.5,color ="Blue"))
+
+
+plot_kill_injured = ggplotly(plot_kill_injured)
+plot_kill_injured
+
+
+```
+
+
+```{r}
+data_kill_injured_day = data_2018_seperate %>% 
+  select(date_complete, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
+
+data_kill_injured_day$injured  = apply(data_kill_injured_day[,c(2,4,6,8)],1,sum,na.rm=T)
+data_kill_injured_day$killed = apply(data_kill_injured_day[,c(3,5,7,9)],1,sum,na.rm=T)
+
+data_kill_injured_day = 
+  data_kill_injured_day%>% 
+  group_by(date_complete) %>% 
+  summarise(
+    sum_injured = sum(injured),
+    sum_killed = sum(killed)
+  ) %>%
+  ungroup() 
+  
+data_kill_injured_day = data_kill_injured_day %>% 
+  pivot_longer(
+    sum_injured:sum_killed,
+    names_to = "type",
+    values_to = "number"
+  ) %>% 
+  mutate(
+    day = rep(1:365, each = 2),
+    month = rep(1:12,c(62,56,62,60,62,60,62,62,60,62,60,62))
+  )
+
+plot_kill_injured_day = data_kill_injured_day %>% 
+  ggplot(aes(x = date_complete, y = number, group = type, color = type))+
+  geom_line()+
+  theme(axis.text.x = element_blank(),
+        axis.title = element_text(size=14,face="bold"),
+        plot.title = element_text(hjust = 0.5,color ="Blue"))+
+  labs(
+   title = "Trend of People being Injured or Killed through the Day",
+   x = "Day of the Year")
+  
+plot_kill_injured_day
+
+plot_kill_injured_day = ggplotly(plot_kill_injured_day)
+plot_kill_injured_day
+```
+```
 
