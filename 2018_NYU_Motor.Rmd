@@ -110,8 +110,6 @@ pal <- colorNumeric(
   palette = "viridis",
   domain = data_2018$persons_injured)
 
-
-
 data_2018 %>% 
   filter(!(lat < "-70" | lat >= "-75")) %>% 
   filter(persons_injured > 2) %>% 
