@@ -234,6 +234,7 @@ summary(fit2) %>%
   broom::tidy() %>% 
   knitr::kable()
 
+par(mfrow = c(2,2))
 plot(fit2)
 ```
 
