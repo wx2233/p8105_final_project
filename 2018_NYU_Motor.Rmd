@@ -13,6 +13,7 @@ library(rvest)
 library(readr)
 library(viridis)
 library(leaflet)
+library(patchwork)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -277,4 +278,185 @@ hour_plot %>%
 ```
 Frequency of accident and injured people in the period of 8 am-19 pm is higher than other period of time. Started from 3 am, number of accident and injured people increase and reach a small peak at 8am. At 5pm, it reaches a big peak. then it started to decrease.
 
+## Holiday Analysis
+```{r}
+data_2018 = tidy_data
+
+holiday_data = 
+  data_2018 %>%
+  select(date_complete, everything()) %>%
+  mutate(holiday = "No Holiday") %>% 
+  select(date_complete, holiday, everything()) %>% 
+  mutate(holiday = replace(holiday, date_complete == "01/01/2018", "New Year's Day"), 
+         holiday = replace(holiday, date_complete == "01/15/2018", "Martin Luther King, Jr. Day"),
+         holiday = replace(holiday, date_complete == "01/13/2018"|date_complete =="01/14/2018", "Martin Luther King Day Weekend (2 days)"),
+         holiday = replace(holiday, date_complete == "02/19/2018", "Presidents Day"),
+         holiday = replace(holiday, date_complete == "02/17/2018"|date_complete =="02/18/2018", "Presidents Day Weekend (2 days)"),
+         holiday = replace(holiday, date_complete == "05/28/2018", "Memorial Day"),
+         holiday = replace(holiday, date_complete == "05/26/2018"|date_complete =="05/27/2018", "Memorial Day Weekend (2 days)"),
+         holiday = replace(holiday, date_complete == "07/04/2018", "Independence Day"),
+         holiday = replace(holiday, date_complete == "07/07/2018"|date_complete =="07/08/2018", "Independence Day Weekend (2 days)"),
+         holiday = replace(holiday, date_complete == "09/03/2018", "Labor Day"),
+         holiday = replace(holiday, date_complete == "09/01/2018"|date_complete =="09/02/2018", "Labor Day Weekend (2 days)"),
+         holiday = replace(holiday, date_complete == "11/22/2018", "Thanksgiving Day"),
+         holiday = replace(holiday, date_complete == "11/23/2018"|date_complete =="11/24/2018"|date_complete =="11/25/2018", "Thanksgiving Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "12/25/2018", "Christmas Day"),
+         holiday = replace(holiday, date_complete == "12/26/2018"|date_complete =="12/27/2018", "Christmas Day Weekend (2 days)")
+         )
+```
+
+```{r}
+holiday_data =
+  holiday_data %>% 
+  drop_na(persons_injured)
+
+holiday_data %>% 
+  group_by(holiday) %>% 
+  summarise(total_injured = sum(persons_injured))
+
+bronx = 
+  holiday_data %>% 
+  filter(borough == "BRONX") %>% 
+  group_by(holiday) %>% 
+  summarise(bronx_total_injured = sum(persons_injured))
+brooklyn = 
+  holiday_data %>% 
+  filter(borough == "BROOKLYN") %>% 
+  group_by(holiday) %>% 
+  summarise(brooklyn_total_injured = sum(persons_injured)) %>% 
+  select(brooklyn_total_injured)
+manhattan = 
+  holiday_data %>% 
+  filter(borough == "MANHATTAN") %>% 
+  group_by(holiday) %>% 
+  summarise(manhattan_total_injured = sum(persons_injured))%>% 
+  select(manhattan_total_injured)
+queens = 
+  holiday_data %>% 
+  filter(borough == "QUEENS") %>% 
+  group_by(holiday) %>% 
+  summarise(queens_total_injured = sum(persons_injured))%>% 
+  select(queens_total_injured)
+staten_island = 
+  holiday_data %>% 
+  filter(borough == "STATEN ISLAND") %>% 
+  group_by(holiday) %>% 
+  summarise(staten_island_total_injured = sum(persons_injured))%>% 
+  select(staten_island_total_injured)
+
+holiday_borough = 
+  cbind(bronx, brooklyn, manhattan, queens, staten_island) %>% 
+  mutate(total = bronx_total_injured+brooklyn_total_injured+manhattan_total_injured+	queens_total_injured+staten_island_total_injured) %>% 
+  filter(holiday!="No Holiday")
+
+knitr::kable(holiday_borough)
+
+holiday_borough_day = 
+  holiday_borough %>% 
+  filter(holiday =="Christmas Day"|holiday =="Independence Day"|holiday =="Labor Day"|holiday =="Martin Luther King, Jr. Day"|holiday =="Memorial Day"|holiday =="New Year’s Day"|holiday =="Thanksgiving Day"|holiday =="Presidents Day")
+
+knitr::kable(holiday_borough_day)
+
+holiday_borough_day = holiday_borough_day[order(holiday_borough_day$total),]
+
+# On the day of the holiday
+
+plot_day =
+pivot_longer(
+    holiday_borough_day, 
+    bronx_total_injured:staten_island_total_injured,
+    names_to = "borough", 
+    values_to = "person_injured") %>% 
+  ggplot(aes(x = reorder(holiday, -total), y = person_injured, fill = borough)) +
+  geom_bar(stat="identity") +
+  theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
+  labs(
+    title = "Persons Injured by Car Crashs on Federal Holidays (2018)",
+    x = "Holiday",
+    y = "# Persons Injured") 
+# scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")) 
+
+```
+
+# On three day weekends 
+
+```{r}
+data_2018 = tidy_data
+
+holiday_data_weekend = 
+  data_2018 %>%
+  select(date_complete, everything()) %>%
+  mutate(holiday = "No Holiday") %>% 
+  select(date_complete, holiday, everything()) %>% 
+  mutate(holiday = replace(holiday, date_complete == "01/15/2018"|date_complete == "01/13/2018"|date_complete =="01/14/2018", "Martin Luther King Day Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "02/17/2018"|date_complete == "02/19/2018"|date_complete =="02/18/2018", "Presidents Day Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "05/28/2018"|date_complete == "05/26/2018"|date_complete =="05/27/2018", "Memorial Day Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "07/04/2018"|date_complete == "07/07/2018"|date_complete =="07/08/2018", "Independence Day Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "09/03/2018"|date_complete == "09/01/2018"|date_complete =="09/02/2018", "Labor Day Weekend (3 days)"),
+         holiday = replace(holiday, date_complete == "11/22/2018"|date_complete == "11/23/2018"|date_complete =="11/24/2018"|date_complete =="11/25/2018", "Thanksgiving Weekend (4 days)"),
+         holiday = replace(holiday, date_complete == "12/25/2018"|date_complete == "12/26/2018"|date_complete =="12/27/2018", "Christmas Day Weekend (3 days)")
+         )
+
+holiday_data_weekend =
+  holiday_data_weekend %>% 
+  drop_na(persons_injured)
+
+holiday_data_weekend %>% 
+  group_by(holiday) %>% 
+  summarise(total_injured = sum(persons_injured))
+
+bronx = 
+  holiday_data_weekend %>% 
+  filter(borough == "BRONX") %>% 
+  group_by(holiday) %>% 
+  summarise(bronx_total_injured = sum(persons_injured))
+brooklyn = 
+  holiday_data_weekend %>% 
+  filter(borough == "BROOKLYN") %>% 
+  group_by(holiday) %>% 
+  summarise(brooklyn_total_injured = sum(persons_injured)) %>% 
+  select(brooklyn_total_injured)
+manhattan = 
+  holiday_data_weekend %>% 
+  filter(borough == "MANHATTAN") %>% 
+  group_by(holiday) %>% 
+  summarise(manhattan_total_injured = sum(persons_injured))%>% 
+  select(manhattan_total_injured)
+queens = 
+  holiday_data_weekend %>% 
+  filter(borough == "QUEENS") %>% 
+  group_by(holiday) %>% 
+  summarise(queens_total_injured = sum(persons_injured))%>% 
+  select(queens_total_injured)
+staten_island = 
+  holiday_data_weekend %>% 
+  filter(borough == "STATEN ISLAND") %>% 
+  group_by(holiday) %>% 
+  summarise(staten_island_total_injured = sum(persons_injured))%>% 
+  select(staten_island_total_injured)
+
+holiday_borough_weekend = 
+  cbind(bronx, brooklyn, manhattan, queens, staten_island) %>% 
+  mutate(total = bronx_total_injured+brooklyn_total_injured+manhattan_total_injured+	queens_total_injured+staten_island_total_injured) %>% 
+  filter(holiday!="No Holiday")
+
+knitr::kable(holiday_borough_weekend)
+
+plot_weekend = 
+pivot_longer(
+    holiday_borough_weekend, 
+    bronx_total_injured:staten_island_total_injured,
+    names_to = "borough", 
+    values_to = "person_injured") %>% 
+  ggplot(aes(x = reorder(holiday, -total), y = person_injured, fill = borough)) +
+  geom_bar(stat="identity") +
+  theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
+  labs(
+    title = "Persons Injured by Car Crashs on Federal Holidays Weekends (2018)",
+    x = "Holiday Weekends",
+    y = "# Persons Injured") +
+  scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))
+
+plot_day + plot_weekend
+```
 
