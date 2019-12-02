@@ -32,6 +32,8 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
+
+## load collision data
 ```{r}
 data_2018 = 
   read_csv("./data/2018data.csv") %>% 
@@ -47,6 +49,9 @@ data_2018 %>%
   ) %>% 
   separate(date, into = c("month", "day", "year"), sep = "/") %>% 
   separate(time, into = c("hour", "minute"), sep = ":") %>%
+  mutate(
+    date_paste = as.Date(paste("2018",month,day,sep = "-"))
+  ) %>% 
   select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
   rename("vehicle_type" = "vehicle_type_code_1") %>% 
   mutate( day = as.numeric(day),
@@ -199,14 +204,14 @@ plot_kill_injured
 
 ```{r}
 data_kill_injured_day = data_2018_seperate %>% 
-  select(date_complete, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
+  select(date_paste, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
 
 data_kill_injured_day$injured  = apply(data_kill_injured_day[,c(2,4,6,8)],1,sum,na.rm=T)
 data_kill_injured_day$killed = apply(data_kill_injured_day[,c(3,5,7,9)],1,sum,na.rm=T)
 
 data_kill_injured_day = 
-  data_kill_injured_day%>% 
-  group_by(date_complete) %>% 
+  data_kill_injured_day %>% 
+  group_by(date_paste) %>% 
   summarise(
     sum_injured = sum(injured),
     sum_killed = sum(killed)
@@ -225,9 +230,9 @@ data_kill_injured_day = data_kill_injured_day %>%
   )
 
 plot_kill_injured_day = data_kill_injured_day %>% 
-  ggplot(aes(x = date_complete, y = number, group = type, color = type))+
+  ggplot(aes(x = date_paste, y = number, group = type, color = type))+
   geom_line()+
-  theme(axis.text.x = element_blank(),
+  theme(
         axis.title = element_text(size=14,face="bold"),
         plot.title = element_text(hjust = 0.5,color ="Blue"))+
   labs(
@@ -516,8 +521,9 @@ collision_weather %>%
   mutate(
     weathertype = fct_reorder(weathertype,count)
   ) %>% 
-  ggplot(aes(weathertype, count,fill = weathertype)) + 
-  geom_bar(stat = "identity") +
+  ggplot(aes(x = weathertype, y = count,
+             fill = weathertype)) + 
+  geom_bar(stat = "identity", width = 0.6) +
   coord_flip()
   
 ggplotly(weather_type_plot)
