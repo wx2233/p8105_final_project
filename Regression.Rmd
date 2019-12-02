@@ -1,0 +1,248 @@
+---
+title: "regression"
+author: "Weijia Xiong"
+date: "12/1/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(rvest)
+library(readr)
+library(viridis)
+library(leaflet)
+library(RColorBrewer)
+library(corrplot)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 10, 
+  fig.height = 10,
+  out.width = "100%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+```{r}
+data_2018 = 
+  read_csv("./data/2018data.csv") %>% 
+  janitor::clean_names() 
+newnames = colnames(data_2018) %>% 
+  str_replace("number_of_","") 
+names(data_2018) = newnames
+
+tidy_data = 
+data_2018 %>% 
+  mutate(
+    date_complete = date 
+  ) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  separate(time, into = c("hour", "minute"), sep = ":") %>%
+  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
+  rename("vehicle_type" = "vehicle_type_code_1",
+          "cause" = "contributing_factor_vehicle_1") %>% 
+  mutate( day = as.numeric(day),
+          month = as.numeric(month),
+          hour = as.numeric(hour),
+          minute = as.numeric(minute),
+          latitude = replace_na(latitude,0),
+          vehicle_type = str_to_lower(vehicle_type)
+  ) %>%
+  filter( latitude != 0) %>% 
+  drop_na(borough)
+```
+
+
+## Weather data
+```{r}
+climate_df = 
+  read_csv("./large_data/climate.csv") %>% 
+  janitor::clean_names() %>% 
+  select(date,hourly_dry_bulb_temperature,hourly_precipitation,daily_weather) %>%
+  separate(date, into = c("date", "time"), sep = " ") %>% 
+  mutate(
+    date = as.Date(date)
+  )
+
+all_day_weather_df =
+  climate_df %>% filter(time == "23:59:00") %>% 
+  distinct(date,daily_weather) %>% 
+  filter(!duplicated(date)) %>% 
+  separate(daily_weather, into = c("weathertype", "other"), sep = 2) %>%
+  mutate(
+    weathertype = recode(weathertype,
+                      "SN" = "snow",
+                      "HZ" = "haze",
+                      "RA" = "rain",
+                      "FG" = "fog",
+                      "BR" = "mist"
+                      ),
+    weathertype = replace_na(weathertype,"sunny")) %>% 
+  select(-other)
+
+daily_weather_df = 
+climate_df %>% 
+  separate(time, into = c("hour", "minute","second"), sep = ":") %>% 
+  separate(date, into = c("year","month", "day"), sep = "-") %>% 
+  separate(hourly_precipitation, into = c("prep","other"), sep = 4) %>% 
+  select(-minute,-second,-year,-daily_weather,-other) %>% 
+  mutate(
+    month = as.numeric(month),
+    day = as.numeric(day),
+    hour = as.numeric(hour),
+    prep = replace_na(as.numeric(prep),0)
+  )
+```
+
+## Light data
+```{r}
+light_data = 
+  read_csv("./large_data/whole_accident.csv") %>% 
+  select(-X1)
+```
+
+## Vehicle data
+```{r}
+vehicle_type_data = 
+  tidy_data %>% 
+  mutate(
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
+    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others"),
+    daytime = if_else(hour %in% 8:20,"1","0")
+  ) 
+
+```
+
+
+
+
+## Regression 
+```{r}
+boro_hour_collision = 
+tidy_data %>%
+  group_by(borough,month,day,hour) %>%
+  summarise(
+    collisionnumber = mean(n())
+  )
+```
+
+## hour by 2 category
+
+```{r}
+boro_daytime_collision = 
+  tidy_data %>%  
+  mutate(
+    daytime = if_else(hour %in% 8:20,"1","0")
+  ) %>% 
+  group_by(borough,month,day,daytime) %>%
+  summarise(
+    collisionnumber = mean(n())
+  )
+```
+
+
+### weather
+```{r}
+weathertype =
+  all_day_weather_df %>% 
+  separate(date, sep = '-',into = c("year","month","day")) %>% 
+  select( -year)
+
+weather_rep = 
+weathertype[rep(seq_len(nrow(weathertype)), each = 2,5), ] %>% 
+  mutate(
+    borough = rep(c("BRONX", "BROOKLYN","MANHATTAN","QUEENS", "STATEN ISLAND"),each = 365*2),
+    daytime = as.factor(rep(rep(0:1,365),5)),
+    month = as.numeric(month),
+    day = as.numeric(day),
+  ) %>% 
+  select(borough,month,day,daytime,weathertype)
+  
+boro_daytime_weather = 
+left_join(boro_daytime_collision, weather_rep, by = c('borough','month','day','daytime'))
+
+prep_data =
+daily_weather_df %>% 
+  mutate(
+    daytime = if_else(hour %in% 8:20,"1","0")
+  ) %>% 
+  group_by(month,day,daytime) %>%
+  summarise(
+    prep = if_else(sum(prep) > 0, "1","0")
+  )
+
+boro_daytime_weather = 
+  left_join(boro_daytime_weather,prep_data,by = c('month','day','daytime'))
+```
+
+### lights
+```{r}
+boro_daytime_weather_light =
+  left_join(boro_daytime_weather,light_data,by = c("month","day","borough")) %>% 
+  select(-num_accident)
+```
+
+## vehicle
+```{r}
+vehicle_data = 
+vehicle_type_data %>% 
+  group_by(borough,month,day,daytime) %>% 
+  summarise(
+    vehicle = names(which.max(table(vehicle_type)))
+  ) 
+boro_daytime_weather_light_vt = left_join(boro_daytime_weather_light, vehicle_data,by = c('borough','month','day','daytime'))
+
+```
+
+
+## holiday
+```{r}
+boro_daytime_weather_light_vt_hol = 
+  boro_daytime_weather_light_vt %>% 
+  mutate(date_complete = paste(month,day, "2018",sep = "/"),
+         holiday = c(0),
+         holiday = replace(holiday, date_complete == "1/15/2018" | date_complete == "1/13/2018" | date_complete == "1/14/2018", "1"),
+         holiday = replace(holiday, date_complete == "2/17/2018" | date_complete == "2/19/2018" | date_complete == "2/18/2018", "1"),
+         holiday = replace(holiday, date_complete == "5/28/2018" | date_complete == "5/26/2018" | date_complete == "5/27/2018", "1"),
+         holiday = replace(holiday, date_complete == "7/4/2018" | date_complete == "7/7/2018" | date_complete == "7/8/2018", "1"),
+         holiday = replace(holiday, date_complete == "9/3/2018" | date_complete == "9/1/2018" | date_complete == "9/2/2018", "1"),
+         holiday = replace(holiday, date_complete == "11/22/2018" | date_complete == "11/23/2018" | date_complete == "11/24/2018" | date_complete == "11/25/2018", "1"),
+         holiday = replace(holiday, date_complete == "12/25/2018" | date_complete == "12/26/2018" | date_complete == "12/27/2018", "1"),
+         holiday = as.factor(holiday),
+         weathertype = as.factor(weathertype),
+         vehicle = as.factor(vehicle)
+         ) %>% 
+  ungroup() %>% 
+  select(-date_complete) %>% 
+  select(collisionnumber,borough,everything())
+
+```
+
+
+```{r}
+fit2 = lm(collisionnumber ~ borough + factor(daytime)*num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+
+summary(fit2) %>% 
+  broom::tidy() %>% 
+  knitr::kable()
+
+plot(fit2)
+```
+
+
+```{r}
+cor(
+  cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
+        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
+  ) %>% 
+  corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
+```
+

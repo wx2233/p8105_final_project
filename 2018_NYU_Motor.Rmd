@@ -14,6 +14,8 @@ library(readr)
 library(viridis)
 library(leaflet)
 library(patchwork)
+library(RColorBrewer)
+library(corrplot)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -458,5 +460,109 @@ pivot_longer(
   scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))
 
 plot_day + plot_weekend
+```
+
+
+# Weather
+
+```{r}
+climate_df = 
+  read_csv("./large_data/climate.csv") %>% 
+  janitor::clean_names() %>% 
+  select(date,hourly_dry_bulb_temperature,hourly_precipitation,daily_weather) %>%
+  separate(date, into = c("date", "time"), sep = " ") %>% 
+  mutate(
+    date = as.Date(date)
+  )
+
+all_day_weather_df =
+  climate_df %>% filter(time == "23:59:00") %>% 
+  distinct(date,daily_weather) %>% 
+  filter(!duplicated(date)) %>% 
+  separate(daily_weather, into = c("weathertype", "other"), sep = 2) %>%
+  mutate(
+    weathertype = recode(weathertype,
+                      "SN" = "snow",
+                      "HZ" = "haze",
+                      "RA" = "rain",
+                      "FG" = "fog",
+                      "BR" = "mist"
+                      ),
+    weathertype = replace_na(weathertype,"sunny")) %>% 
+  select(-other)
+
+collision_all = 
+tidy_data %>% 
+  group_by(date_complete) %>% 
+  summarise(
+    collision_event = n(),
+    injured_event = sum(persons_injured != 0, na.rm = TRUE),
+    killed_event = sum(persons_killed != 0, na.rm = TRUE)
+  )
+
+collision_weather = 
+bind_cols(all_day_weather_df,collision_all) %>% 
+  select(-date_complete)
+```
+
+## Weather type
+```{r}
+weather_type_plot =  
+collision_weather %>% 
+  group_by(weathertype) %>% 
+  summarise(
+    count = mean(collision_event)
+  ) %>% 
+  mutate(
+    weathertype = fct_reorder(weathertype,count)
+  ) %>% 
+  ggplot(aes(weathertype, count,fill = weathertype)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+  
+ggplotly(weather_type_plot)
+```
+
+## Daily weather
+```{r}
+daily_weather_df = 
+climate_df %>% 
+  separate(time, into = c("hour", "minute","second"), sep = ":") %>% 
+  separate(date, into = c("year","month", "day"), sep = "-") %>% 
+  separate(hourly_precipitation, into = c("prep","other"), sep = 4) %>% 
+  select(-minute,-second,-year,-daily_weather,-other) %>% 
+  mutate(
+    month = as.numeric(month),
+    day = as.numeric(day),
+    hour = as.numeric(hour),
+    prep = replace_na(as.numeric(prep),0)
+  )
+
+daily_collision_data = 
+tidy_data %>% 
+  select(month,day,hour,persons_injured,persons_killed) %>% 
+  group_by(month,day,hour) %>% 
+  summarise(
+    eventsnumber = n()
+  )
+
+daily_weather_collision = 
+  left_join(daily_weather_df,daily_collision_data,
+            by = c("month","day","hour")) %>% 
+  mutate(
+    prep_degree = 
+      if_else(prep %in% 0:0.10,"light",
+              if_else( prep < 0.3 & prep > 0.11 , "moderate","heavy")),
+    prep_degree = fct_relevel(prep_degree, c("heavy","moderate","light"))
+  )
+
+daily_weather_plot =
+daily_weather_collision %>% 
+  ggplot(aes(hour, eventsnumber, color = prep_degree)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(~ prep_degree) +
+  scale_colour_manual(name = "grp",values = brewer.pal(5,"Set2"))
+
+ggplotly(daily_weather_plot)
 ```
 
