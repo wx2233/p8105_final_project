@@ -238,8 +238,7 @@ plot_kill_injured_day = data_kill_injured_day %>%
   labs(
    title = "Trend of People being Injured or Killed through the Day",
    x = "Day of the Year")
-  
-plot_kill_injured_day
+
 
 plot_kill_injured_day = ggplotly(plot_kill_injured_day)
 plot_kill_injured_day
