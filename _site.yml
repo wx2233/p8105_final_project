@@ -1,0 +1,24 @@
+name: "P8105 Final Website"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "About"
+      href: about.html
+    - text: "Overview"
+      href: intro_page.html
+    - text: "Collision by Borough"
+      href: https://zanis-shiny.shinyapps.io/zanis_shiny/
+    - text: "Collision by Time"
+      href: zanis_regression.html
+    - text: "Regression Analysis"
+      href: gun_control2.html
+    - text: "Conclusions"
+      href: conclusions.html
+    - icon: fa-envelope fa-lg
+      href: mailto:<wx2233@cumc.columbia.edu>
+    - icon: fa-github fa-lg
+      href: https://github.com/wx2233/p8105_final_project
+output:
+  html_document: 
+    theme: cosmo

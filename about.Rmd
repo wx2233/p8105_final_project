@@ -1,0 +1,61 @@
+---
+title: "**About**"
+output: 
+  html_document:
+      toc: true
+      toc_float: true
+---
+
+<center>
+<img src="image/car_collision.jpg" style="width:50%">
+</center>
+
+<br>
+
+### **Motivation**
+According to [Driver knowledge](https://www.driverknowledge.com/car-accident-statistics/#:~:targetText=U.S.%20every%20year%20is%206,experience%20permanent%20injuries%20every%20year.), there are 6 million average number of car accidents in the U.S every year, more than 90 people died in accidents everyday. The severity of car accidents raised our attention on finding factors impacting car accidents numbers. Through this report, we tried to explore the association between accident number and weather, time of a day, holidays, number of borken street lights or traffic lights,number of restaurant in certain area. We hope anyone who go over our report can get useful information, meanwhile raise security awareness.
+
+<br>
+
+### **Methods**
+
+Data from five sources were considered for this project. The data sources, scraping methods and cleaning procedures for each dataset are described below. 
+
+*  The Github repository for this project can be found [here](https://github.com/ChristineLong/p8105_Final_Project). 
+
+*  The final website can be found [here](https://eshea6.github.io/us_gun_violence.github.io/), and corresponding Github repository for the website is located [here](https://github.com/eshea6/us_gun_violence.github.io).
+
+*  The final report is housed in a repository [here](https://github.com/devon-m2/p8105_Gun-Violence_Final-Report). 
+
+<br>
+
+### **Data**
+***NYPD Motor Vehicle Collisions-Crashes Data*** can be accessed [here](https://www.kaggle.com/jameslko/gun-violence-data) and is from the [NYC Open Data](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95). NYC Open Data is free public data published by New York City agencies and other partners. The Motor Vehicle Collisions data tables contain information from all police reported motor vehicle collisions in NYC. The police report [MV104-AN](https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/documents/ny_overlay_mv-104an_rev05_2004.pdf) is required to be filled out for collisions where someone is injured or killed, or where there is at least $1000 worth of damage.
+
+***DOHMH New York City Restaurant Inspection Results Data*** was obtained from the [NYC Open Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j). The dataset was used to assess the association between the restaurant number and alcohol involved collision number. 
+
+***Gun law scores of states*** is created by the [Giffords Law Center](https://lawcenter.giffords.org/scorecard/#rankings) using "a comprehensive grading rubric that assigns positive point values to gun safety policies, such as private-sale background checks and extreme risk protection orders, and negative point values to dangerous laws, such as permitless concealed carry". 
+
+Data on ***gun license applications*** was taken from the [National Instant Criminal Background Check System (NICS)](https://www.statista.com/statistics/249687/number-of-background-checks-done-by-the-nics-in-the-us-by-state/), which is used by Federal Firearms Licensees (FFLs) to instantly determine whether a prospective buyer is eligible to buy firearms or explosives. This data is used to approximate how many people tried to apply for gun licenses in each state. 
+
+Data on the ***number of federal firearms licensees in the U.S.*** was downloaded from [Statista](https://www.statista.com/statistics/215670/number-of-federal-firearms-licensees-in-the-us-by-state/). This source pulls data from the U.S. Bureau of Alcohol, Tobacco, Firearms and Explosives (ATF), and is used to approximate how many people actually got approved for gun licenses in each state. 
+
+***State total population data*** was also taken from [Statista](https://www.statista.com/statistics/183497/population-in-the-federal-states-of-the-us/). It was used to standardize the number of approved licenses and applications in different states. 
+
+***Unemployment data*** come from
+[FRED economic research](https://fred.stlouisfed.org/search?st=unemployment+rate). Each dataset describe percentage of unemployment in each state, not seasonally adjusted.
+
+***Chronic disease related data*** extract from
+[data.gov](https://catalog.data.gov/dataset/u-s-chronic-disease-indicators-cdi). Chronic disease related information, such as rate of heavy drinking, mental healthness, poverty, etc, in each state each year.
+
+<br>
+
+### **Screencast**
+
+This screencast illustrates our project, emphasizing our motivation, data analysis, and results.
+
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RDvGwWrEWo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</center>
+
+<br>
