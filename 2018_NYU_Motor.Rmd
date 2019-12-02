@@ -238,8 +238,7 @@ plot_kill_injured_day = data_kill_injured_day %>%
   labs(
    title = "Trend of People being Injured or Killed through the Day",
    x = "Day of the Year")
-  
-plot_kill_injured_day
+
 
 plot_kill_injured_day = ggplotly(plot_kill_injured_day)
 plot_kill_injured_day
@@ -378,9 +377,11 @@ pivot_longer(
   geom_bar(stat="identity") +
   theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
   labs(
-    title = "Persons Injured by Car Crashs on Federal Holidays (2018)",
+    title = "Persons Injured by Car Crashs \n on Federal Holidays (2018)",
     x = "Holiday",
-    y = "# Persons Injured") 
+    y = "# Persons Injured") +
+  scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))
+
 # scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")) 
 
 ```
@@ -459,7 +460,7 @@ pivot_longer(
   geom_bar(stat="identity") +
   theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
   labs(
-    title = "Persons Injured by Car Crashs on Federal Holidays Weekends (2018)",
+    title = "Persons Injured by Car Crashs on \n Federal Holidays Weekends (2018)",
     x = "Holiday Weekends",
     y = "# Persons Injured") +
   scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))
