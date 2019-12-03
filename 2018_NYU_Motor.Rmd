@@ -192,114 +192,84 @@ data_2018_seperate = tidy_data
 ```
 
 
-## 
-```{r}
-data_kill_injured = data_2018_seperate %>% 
-  select(month, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
 
-data_kill_injured$injured  = apply(data_kill_injured[,c(2,4,6,8)],1,sum,na.rm=T)
-data_kill_injured$killed = apply(data_kill_injured[,c(3,5,7,9)],1,sum,na.rm=T)
+### Association between Day and People Injured or killed or Accident Number
 
-data_kill_injured = 
-  data_kill_injured %>% 
-  group_by(month) %>% 
-  summarise(
-    sum_injured = sum(injured),
-    sum_killed = sum(killed)
-  ) %>%
-  ungroup() 
-  
-data_kill_injured = data_kill_injured %>% 
-  pivot_longer(
-    sum_injured:sum_killed,
-    names_to = "type",
-    values_to = "number"
-  ) 
-
-```
-
-```{r}
-plot_kill_injured = data_kill_injured %>% 
-  ggplot(aes(x = month, y = number, color = type))+
-           geom_point()+
-           geom_line()+
-  scale_x_continuous(breaks=seq(1, 12, 1),
-                     labels = c("Jan", "Feb", "Mar", "Apr", "May",
-                                "Jun","Jul", "Aug", "Sep", "Oct",
-                                "Nov", "Dec"))+
-  scale_y_continuous(breaks = seq(0,11000,1000))+
-  labs(
-   title = "Trend of People being Injured or Killed through the Year")+
-  theme(axis.title = element_text(size=14,face="bold"),
-        plot.title = element_text(hjust = 0.5,color ="Blue"))
-
-
-plot_kill_injured = ggplotly(plot_kill_injured)
-plot_kill_injured
-
-
-```
-
-
-```{r}
-data_kill_injured_day = data_2018_seperate %>% 
-  select(date_paste, persons_injured,persons_killed, pedestrians_injured, pedestrians_killed, cyclist_injured, cyclist_killed, motorist_injured, motorist_killed)
-
-data_kill_injured_day$injured  = apply(data_kill_injured_day[,c(2,4,6,8)],1,sum,na.rm=T)
-data_kill_injured_day$killed = apply(data_kill_injured_day[,c(3,5,7,9)],1,sum,na.rm=T)
-
-data_kill_injured_day = 
-  data_kill_injured_day %>% 
+```{r, echo = FALSE}
+data_acci_day = tidy_data %>% 
   group_by(date_paste) %>% 
-  summarise(
-    sum_injured = sum(injured),
-    sum_killed = sum(killed)
-  ) %>%
-  ungroup() 
-  
-data_kill_injured_day = data_kill_injured_day %>% 
-  pivot_longer(
-    sum_injured:sum_killed,
-    names_to = "type",
-    values_to = "number"
-  ) %>% 
   mutate(
-    day = rep(1:365, each = 2),
-    month = rep(1:12,c(62,56,62,60,62,60,62,62,60,62,60,62))
-  )
+    sum_acci = n()
+  ) %>% 
+  select(date_paste, sum_acci) %>% 
+  distinct()
 
-plot_kill_injured_day = data_kill_injured_day %>% 
-  ggplot(aes(x = date_paste, y = number, group = type, color = type))+
+data_kill_injured_day = tidy_data %>% 
+  group_by(date_paste) %>% 
+  mutate(
+    sum_injured = sum(persons_injured,na.rm = TRUE),
+    sum_killed = sum(persons_killed,na.rm = TRUE)
+  ) %>% 
+  select(date_paste, sum_injured, sum_killed) %>% 
+  distinct( ) 
+
+data_day = cbind(data_acci_day, data_kill_injured_day) %>% 
+  select(-date_paste1)
+data_day= rename(data_day, 
+                "accident number"  = "sum_acci",
+                "people injured"  = "sum_injured" , 
+                 "people killed" = "sum_killed" ,
+                 "date" = "date_paste" ) 
+
+data_day  = data_day %>% 
+  pivot_longer(
+    `accident number`:`people killed`,
+    names_to   = "type",
+    values_to = "number"
+  )
+```
+
+
+```{r}
+plot_day =data_day %>% 
+  ggplot(aes(x = date,y = number, color = type))+
   geom_line()+
   theme(
         axis.title = element_text(size=14,face="bold"),
-        plot.title = element_text(hjust = 0.5,color ="Blue"))+
+        plot.title = element_text(hjust = 0.5,size=14,face="bold"))+
   labs(
-   title = "Trend of People being Injured or Killed through the Day",
-   x = "Day of the Year")
+   title = "Trend Over the Year",
+   x = "Day of the Year",
+   y = "Number")
 
 
-plot_kill_injured_day = ggplotly(plot_kill_injured_day)
+plot_kill_injured_day = ggplotly(plot_day)
 plot_kill_injured_day
 ```
 
 
-## proportion of accident and injured people by borough, by hour
+
+### proportion of accident and injured people by borough, by hour
 
 ```{r}
 boro_plot = tidy_data %>% 
   drop_na(borough, persons_injured, persons_killed) %>%
   group_by(borough) %>%
   summarize(accident = n(),
-            injured = sum(persons_injured)) %>%
+            injured = sum(persons_injured),
+            killed = sum(persons_killed)) %>%
   mutate(prop_accident = round(accident/sum(accident),4),
-         prop_injured = round(injured/sum(injured),4)) %>%
+         prop_injured = round(injured/sum(injured),4),
+         prop_killed = round(killed/sum(killed),4)) %>%
   mutate(text_label1 = str_c("accident: ", accident), 
-         text_label2 = str_c("injured: ", injured)) %>% 
+         text_label2 = str_c("injured: ", injured),
+         text_label3 = str_c("killed: ", killed)) %>% 
   plot_ly(x = ~borough, y = ~prop_accident, type = 'bar', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
   add_trace(x = ~borough, y = ~prop_injured, type = 'bar', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
+  add_trace(x = ~borough, y = ~prop_killed, type = 'bar', name = 'injury', text = ~text_label3, alpha = 0.8) %>%
   layout(title="proportion of accident and injured people by borough", xaxis = list(title = 'borough'), barmode = 'group', legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
 boro_plot
+
 ```
 Number of accident and injured people in Brooklyn is greatest comparing with other boroughs. Queen is second. Staten Island have fewest accident and injured people. Manhattan and Bronx is in the middle.
 
@@ -308,18 +278,23 @@ hour_table = tidy_data %>%
   drop_na(hour, persons_injured, persons_killed) %>%
   group_by(hour) %>%
   summarize(accident = n(),
-            injured = sum(persons_injured)) 
+            injured = sum(persons_injured),
+            killed = sum(persons_killed)) 
 hour_plot = hour_table %>%
   mutate(prop_accident = round(accident/sum(accident),4),
-         prop_injured = round(injured/sum(injured),4)) %>%
+         prop_injured = round(injured/sum(injured),4),
+         prop_killed = round(killed/sum(killed),4)) %>%
   mutate(text_label1 = str_c("accident: ", accident), 
-         text_label2 = str_c("injured: ", injured)) %>% 
+         text_label2 = str_c("injured: ", injured),
+         text_label3 = str_c("killed: ", killed)) %>% 
   plot_ly(x = ~hour, y = ~prop_accident, type = 'scatter', mode = 'lines', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
+  add_trace(x = ~hour, y = ~prop_killed, type = 'scatter', mode = 'lines', name = 'killed', text = ~text_label3, alpha = 0.8) %>%
   add_trace(x = ~hour, y = ~prop_injured, type = 'scatter', mode = 'lines', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
-  layout(title="proportion of accident and injured people by hour", xaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 1, title = 'Hour'), yaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 0.01, title = 'proportion'), legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
+layout(title="proportion of accident and injured people by hour", xaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 1, title = 'Hour'), yaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 0.01, title = 'proportion'), legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
 
 hour_plot %>%
-  layout(shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 19, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+  layout(shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+
 ```
 Frequency of accident and injured people in the period of 8 am-19 pm is higher than other period of time. Started from 3 am, number of accident and injured people increase and reach a small peak at 8am. At 5pm, it reaches a big peak. then it started to decrease.
 
