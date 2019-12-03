@@ -29,7 +29,7 @@ options(
 )
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
+theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = element_text(face = "bold")))
 ```
 
 
@@ -82,15 +82,18 @@ vehicle_type_data =
     n = n()
   )
 
+vehicle_type_plot = 
 vehicle_type_data %>% 
-  plot_ly(
-    x = ~hour, y = ~n, color = ~vehicle_type, type = "scatter", mode = "line") %>% 
-  layout(
+  ggplot(aes(x = hour, y = n, color = vehicle_type)) +
+  geom_line() +
+  labs(
+    color = "vehicle type",
     title = "Collisions of Day for Different Vehicles",
-    xaxis = list(title = "Hour of Day"),
-    yaxis = list(title = "Collisions")
+    x = list(title = "Hour of Day"),
+    y = list(title = "Collisions")
     )
   
+ggplotly(vehicle_type_plot)
 ```
 
 
@@ -247,9 +250,6 @@ plot_day =
    x = "Day of the Year",
    y = "Number") +
   annotate("text", x = as.Date("2018-11-15") , y = 695, label = "2018-11-15")
-
-
-
 
 plot_kill_injured_day = ggplotly(plot_day)
 plot_kill_injured_day
