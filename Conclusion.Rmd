@@ -1,0 +1,18 @@
+---
+title: "Conclusion"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### (Regression Model)
+
+### We do find some very meaningful trends using our dataset. First, avoid accident prone hours and holidays. Accidents are more likely to happen during rush hours, while the most fatal ones happen early in the morning (6 o'clock) and at night (9 o’clock). Moreover, holiday weekends are more traffic prone. Second, have good driving habits. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. Third, stay away from bad weather, as more accidents are likely to happen during severe weather. 
+
+### In conclusion, our analysis lead us to discover some important causes for car accidents. However, we faced issues of missing data and non uniform observation names when we are trying to analyze contributing factors and vehicle types. The second highest contributing factor is unspecified, and knowing the right contributing factors could play a crucial rule when trying to reduce car accident numbers. Also, most vehicle types are recorded in different ways, which increased the difficulty to classify them. Better conclusion could be drawn if the data collecting mechanism is adopted.  
+
+### We hope by doing this analysis, people could travel more safely and wisely in New York City. 
+
+
