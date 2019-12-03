@@ -53,7 +53,8 @@ data_2018 %>%
     date_paste = as.Date(paste("2018",month,day,sep = "-"))
   ) %>% 
   select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
-  rename("vehicle_type" = "vehicle_type_code_1") %>% 
+  rename("vehicle_type" = "vehicle_type_code_1",
+         "cause" = "contributing_factor_vehicle_1") %>% 
   mutate( day = as.numeric(day),
           month = as.numeric(month),
           hour = as.numeric(hour),
@@ -61,7 +62,8 @@ data_2018 %>%
           latitude = replace_na(latitude,0),
           vehicle_type = str_to_lower(vehicle_type)
   ) %>%
-  filter( latitude != 0)
+  filter( latitude != 0) %>% 
+  drop_na(borough)
   
   
 ```
@@ -93,23 +95,70 @@ vehicle_type_data %>%
 ```
 
 
-### Top 8 Collision Reasons
+### Top 10 Collision Reasons
 ```{r}
-reason_data = 
-  tidy_data %>%
-  group_by(contributing_factor_vehicle_1) %>%
-  summarize(n = n()) %>% 
-  arrange(desc(n)) %>% 
-  head(10)
+# reason_data = 
+#   tidy_data %>%
+#   group_by(contributing_factor_vehicle_1) %>%
+#   summarize(n = n()) %>% 
+#   arrange(desc(n)) %>% 
+#   head(10)
+# reason_data %>% 
+#   plot_ly(x = ~reorder(contributing_factor_vehicle_1,desc(n)), y = ~n, color = ~contributing_factor_vehicle_1 ,type = "bar") %>% 
+#   layout(
+#     title = "The Number of Items Ordered in Each Aisle",
+#     xaxis = list(title = "Different Reasons"),
+#     yaxis = list(title = "Count")
+#     )
 
-reason_data %>% 
-  plot_ly(x = ~reorder(contributing_factor_vehicle_1,desc(n)), y = ~n, color = ~contributing_factor_vehicle_1 ,type = "bar") %>% 
-  layout(
-    title = "The Number of Items Ordered in Each Aisle",
-    xaxis = list(title = "Different Reasons"),
-    yaxis = list(title = "Count")
-    )
+df_cause =  
+  tidy_data %>% 
+  select(borough,cause) %>% 
+      filter(!(cause %in% c('', 
+                            'Unspecified', 
+                            'Driver Inattention/Distraction',
+                            'Other Vehicular',
+                            'Failure to Yield Right-of-Way'))
+             ) 
+df_cause_top = 
+  df_cause %>%
+  group_by(cause) %>%
+  summarise(count = n()) %>%
+  top_n(10, count) %>% 
+  ungroup() %>% 
+  arrange(count)
 
+cause_by_boro =  
+  df_cause %>% 
+  semi_join(., df_cause_top, by = "cause") %>%
+  group_by(borough, cause) %>%
+  summarise(count = n()) %>% 
+  # reorder cause levels for desirable order in bar chart display:
+  mutate(
+    cause = factor(cause, levels = pull(df_cause_top,cause))
+    ) 
+
+cause_by_boro_all = 
+  cause_by_boro %>% 
+  group_by(borough) %>%
+  summarise(total = sum(count))
+
+cause_by_boro = 
+  left_join(cause_by_boro, cause_by_boro_all, by = "borough") %>%
+  mutate(ratio = count / total) %>%
+  select(-count, -total) 
+
+cause_by_boro_plot =
+  cause_by_boro %>% 
+  ggplot(aes(x = cause, y = ratio, fill = borough)) +
+      geom_bar(width = 0.5, stat = 'identity', show.legend = F) +
+      coord_flip() +
+      facet_grid(.~borough) +
+      labs(title = 'Collisions by Causes',
+           x = NULL,
+           y = NULL) +
+  theme(axis.text.x = element_text(angle = 45))
+ggplotly(cause_by_boro_plot)
 ```
 
 ## Mapping
@@ -128,7 +177,7 @@ data_2018 %>%
   filter(persons_injured > 2) %>% 
     mutate(
     label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>% 
-  sample_n(2000) %>% 
+  sample_n(1875) %>% 
   leaflet() %>% 
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
