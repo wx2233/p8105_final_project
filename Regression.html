@@ -10,10 +10,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Weijia Xiong" />
 
 
-<title>regression</title>
+<title>Regression</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -316,257 +315,33 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">regression</h1>
-<h4 class="author">Weijia Xiong</h4>
-<h4 class="date">12/1/2019</h4>
+<h1 class="title toc-ignore">Regression</h1>
 
 </div>
 
 
-<pre class="r"><code>data_2018 = 
-  read_csv(&quot;./data/2018data.csv&quot;) %&gt;% 
-  janitor::clean_names() </code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   TIME = col_time(format = &quot;&quot;),
-##   `ZIP CODE` = col_double(),
-##   LATITUDE = col_double(),
-##   LONGITUDE = col_double(),
-##   `NUMBER OF PERSONS INJURED` = col_double(),
-##   `NUMBER OF PERSONS KILLED` = col_double(),
-##   `NUMBER OF PEDESTRIANS INJURED` = col_double(),
-##   `NUMBER OF PEDESTRIANS KILLED` = col_double(),
-##   `NUMBER OF CYCLIST INJURED` = col_double(),
-##   `NUMBER OF CYCLIST KILLED` = col_double(),
-##   `NUMBER OF MOTORIST INJURED` = col_double(),
-##   `NUMBER OF MOTORIST KILLED` = col_double(),
-##   COLLISION_ID = col_double()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<pre class="r"><code>newnames = colnames(data_2018) %&gt;% 
-  str_replace(&quot;number_of_&quot;,&quot;&quot;) 
-names(data_2018) = newnames
-
-tidy_data = 
-data_2018 %&gt;% 
-  mutate(
-    date_complete = date 
-  ) %&gt;% 
-  separate(date, into = c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), sep = &quot;/&quot;) %&gt;% 
-  separate(time, into = c(&quot;hour&quot;, &quot;minute&quot;), sep = &quot;:&quot;) %&gt;%
-  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %&gt;% 
-  rename(&quot;vehicle_type&quot; = &quot;vehicle_type_code_1&quot;,
-          &quot;cause&quot; = &quot;contributing_factor_vehicle_1&quot;) %&gt;% 
-  mutate( day = as.numeric(day),
-          month = as.numeric(month),
-          hour = as.numeric(hour),
-          minute = as.numeric(minute),
-          latitude = replace_na(latitude,0),
-          vehicle_type = str_to_lower(vehicle_type)
-  ) %&gt;%
-  filter( latitude != 0) %&gt;% 
-  drop_na(borough)</code></pre>
-<div id="weather-data" class="section level2">
-<h2>Weather data</h2>
-<pre class="r"><code>climate_df = 
-  read_csv(&quot;./large_data/climate.csv&quot;) %&gt;% 
-  janitor::clean_names() %&gt;% 
-  select(date,hourly_dry_bulb_temperature,hourly_precipitation,daily_weather) %&gt;%
-  separate(date, into = c(&quot;date&quot;, &quot;time&quot;), sep = &quot; &quot;) %&gt;% 
-  mutate(
-    date = as.Date(date)
-  )</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_double(),
-##   DATE = col_datetime(format = &quot;&quot;),
-##   REPORT_TYPE = col_character(),
-##   BackupDirection = col_logical(),
-##   BackupDistance = col_logical(),
-##   BackupDistanceUnit = col_logical(),
-##   BackupElements = col_logical(),
-##   BackupElevation = col_logical(),
-##   BackupElevationUnit = col_logical(),
-##   BackupEquipment = col_logical(),
-##   BackupLatitude = col_logical(),
-##   BackupLongitude = col_logical(),
-##   BackupName = col_logical(),
-##   DailyPeakWindDirection = col_character(),
-##   DailyPrecipitation = col_character(),
-##   DailySnowDepth = col_character(),
-##   DailySnowfall = col_character(),
-##   DailySustainedWindDirection = col_character(),
-##   DailyWeather = col_character(),
-##   HeavyFog = col_logical(),
-##   HourlyPrecipitation = col_character()
-##   # ... with 29 more columns
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<pre class="r"><code>all_day_weather_df =
-  climate_df %&gt;% filter(time == &quot;23:59:00&quot;) %&gt;% 
-  distinct(date,daily_weather) %&gt;% 
-  filter(!duplicated(date)) %&gt;% 
-  separate(daily_weather, into = c(&quot;weathertype&quot;, &quot;other&quot;), sep = 2) %&gt;%
-  mutate(
-    weathertype = recode(weathertype,
-                      &quot;SN&quot; = &quot;snow&quot;,
-                      &quot;HZ&quot; = &quot;haze&quot;,
-                      &quot;RA&quot; = &quot;rain&quot;,
-                      &quot;FG&quot; = &quot;fog&quot;,
-                      &quot;BR&quot; = &quot;mist&quot;
-                      ),
-    weathertype = replace_na(weathertype,&quot;sunny&quot;)) %&gt;% 
-  select(-other)
-
-daily_weather_df = 
-climate_df %&gt;% 
-  separate(time, into = c(&quot;hour&quot;, &quot;minute&quot;,&quot;second&quot;), sep = &quot;:&quot;) %&gt;% 
-  separate(date, into = c(&quot;year&quot;,&quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;) %&gt;% 
-  separate(hourly_precipitation, into = c(&quot;prep&quot;,&quot;other&quot;), sep = 4) %&gt;% 
-  select(-minute,-second,-year,-daily_weather,-other) %&gt;% 
-  mutate(
-    month = as.numeric(month),
-    day = as.numeric(day),
-    hour = as.numeric(hour),
-    prep = replace_na(as.numeric(prep),0)
-  )</code></pre>
+<div id="method" class="section level3">
+<h3>Method</h3>
+<p>In this research, we try to find relationship between collision and several factors. As a result, accident numbers is considered to be outcome (dependent variable), exposure of interest below are considered to be independent variables. Multiple linear regression is conducted to testify if correlation between outcome and predictors is significant.</p>
+<p><em>1.collisionnumber: accident number at specific borough, date and time</em></p>
+<p><em>2.daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)</em></p>
+<p><em>3.borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.</em></p>
+<p><em>4.num_light: numbers of unfinished street light services</em></p>
+<p><em>5.num_signal: number of nufinished traffic signal services</em></p>
+<p><em>6.weathertype: weather type (fog, haze, mist, rain, snow and sunny)</em></p>
+<p><em>7.prep: percipitation</em></p>
+<p><em>8.vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date</em></p>
+<p><em>9.holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.</em></p>
 </div>
-<div id="light-data" class="section level2">
-<h2>Light data</h2>
-<pre class="r"><code>light_data = 
-  read_csv(&quot;./large_data/night_accident.csv&quot;) %&gt;% 
-  select(-X1)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   X1 = col_double(),
-##   day = col_double(),
-##   month = col_double(),
-##   borough = col_character(),
-##   num_accident = col_double(),
-##   num_light = col_double()
-## )</code></pre>
-<pre class="r"><code>signal_data = 
-  read_csv(&quot;./large_data/whole_accident.csv&quot;) %&gt;% 
-  select(-X1)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   X1 = col_double(),
-##   day = col_double(),
-##   month = col_double(),
-##   borough = col_character(),
-##   num_accident = col_double(),
-##   num_signal = col_double()
-## )</code></pre>
-<pre class="r"><code>light_data = 
-  cbind(light_data,num_signal = pull(signal_data,num_signal))</code></pre>
-</div>
-<div id="vehicle-data" class="section level2">
-<h2>Vehicle data</h2>
-<pre class="r"><code>vehicle_type_data = 
-  tidy_data %&gt;% 
-  mutate(
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,&quot;truck&quot;),&quot;truck&quot;),
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,&quot;sport utility&quot;),&quot;sport utility vehicle&quot;),
-    vehicle_type = replace(vehicle_type, vehicle_type %in% c(&quot;taxi&quot;,&quot;passenger vehicle&quot;,&quot;sedan&quot;,&quot;truck&quot;,&quot;sport utility vehicle&quot;) == FALSE, &quot;others&quot;),
-    daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;)
-  ) </code></pre>
-</div>
-<div id="regression" class="section level2">
-<h2>Regression</h2>
-<pre class="r"><code>boro_hour_collision = 
-tidy_data %&gt;%
-  group_by(borough,month,day,hour) %&gt;%
-  summarise(
-    collisionnumber = mean(n())
-  )</code></pre>
-</div>
-<div id="hour-by-2-category" class="section level2">
-<h2>hour by 2 category</h2>
-<pre class="r"><code>boro_daytime_collision = 
-  tidy_data %&gt;%  
-  mutate(
-    daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;)
-  ) %&gt;% 
-  group_by(borough,month,day,daytime) %&gt;%
-  summarise(
-    collisionnumber = mean(n())
-  )</code></pre>
-<div id="weather" class="section level3">
-<h3>weather</h3>
-<pre class="r"><code>weathertype =
-  all_day_weather_df %&gt;% 
-  separate(date, sep = &#39;-&#39;,into = c(&quot;year&quot;,&quot;month&quot;,&quot;day&quot;)) %&gt;% 
-  select( -year)
-
-weather_rep = 
-weathertype[rep(seq_len(nrow(weathertype)), each = 2,5), ] %&gt;% 
-  mutate(
-    borough = rep(c(&quot;BRONX&quot;, &quot;BROOKLYN&quot;,&quot;MANHATTAN&quot;,&quot;QUEENS&quot;, &quot;STATEN ISLAND&quot;),each = 365*2),
-    daytime = as.factor(rep(rep(0:1,365),5)),
-    month = as.numeric(month),
-    day = as.numeric(day),
-  ) %&gt;% 
-  select(borough,month,day,daytime,weathertype)
-  
-boro_daytime_weather = 
-left_join(boro_daytime_collision, weather_rep, by = c(&#39;borough&#39;,&#39;month&#39;,&#39;day&#39;,&#39;daytime&#39;))
-
-prep_data =
-daily_weather_df %&gt;% 
-  mutate(
-    daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;)
-  ) %&gt;% 
-  group_by(month,day,daytime) %&gt;%
-  summarise(
-    prep = if_else(sum(prep) &gt; 0, &quot;1&quot;,&quot;0&quot;)
-  )
-
-boro_daytime_weather = 
-  left_join(boro_daytime_weather,prep_data,by = c(&#39;month&#39;,&#39;day&#39;,&#39;daytime&#39;))</code></pre>
-</div>
-<div id="lights" class="section level3">
-<h3>lights</h3>
-<pre class="r"><code>boro_daytime_weather_light =
-  left_join(boro_daytime_weather,light_data,by = c(&quot;month&quot;,&quot;day&quot;,&quot;borough&quot;)) %&gt;% 
-  select(-num_accident)</code></pre>
-</div>
-</div>
-<div id="vehicle" class="section level2">
-<h2>vehicle</h2>
-<pre class="r"><code>vehicle_data = 
-vehicle_type_data %&gt;% 
-  group_by(borough,month,day,daytime) %&gt;% 
-  summarise(
-    vehicle = names(which.max(table(vehicle_type)))
-  ) 
-boro_daytime_weather_light_vt = left_join(boro_daytime_weather_light, vehicle_data,by = c(&#39;borough&#39;,&#39;month&#39;,&#39;day&#39;,&#39;daytime&#39;))</code></pre>
-</div>
-<div id="holiday" class="section level2">
-<h2>holiday</h2>
-<pre class="r"><code>boro_daytime_weather_light_vt_hol = 
-  boro_daytime_weather_light_vt %&gt;% 
-  mutate(date_complete = paste(month,day, &quot;2018&quot;,sep = &quot;/&quot;),
-         holiday = c(0),
-         holiday = replace(holiday, date_complete == &quot;1/15/2018&quot; | date_complete == &quot;1/13/2018&quot; | date_complete == &quot;1/14/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;2/17/2018&quot; | date_complete == &quot;2/19/2018&quot; | date_complete == &quot;2/18/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;5/28/2018&quot; | date_complete == &quot;5/26/2018&quot; | date_complete == &quot;5/27/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;7/4/2018&quot; | date_complete == &quot;7/7/2018&quot; | date_complete == &quot;7/8/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;9/3/2018&quot; | date_complete == &quot;9/1/2018&quot; | date_complete == &quot;9/2/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;11/22/2018&quot; | date_complete == &quot;11/23/2018&quot; | date_complete == &quot;11/24/2018&quot; | date_complete == &quot;11/25/2018&quot;, &quot;1&quot;),
-         holiday = replace(holiday, date_complete == &quot;12/25/2018&quot; | date_complete == &quot;12/26/2018&quot; | date_complete == &quot;12/27/2018&quot;, &quot;1&quot;),
-         holiday = as.factor(holiday),
-         weathertype = as.factor(weathertype),
-         vehicle = as.factor(vehicle)
-         ) %&gt;% 
-  ungroup() %&gt;% 
-  select(-date_complete) %&gt;% 
-  select(collisionnumber,borough,everything())</code></pre>
-<pre class="r"><code>fit2 = lm(collisionnumber ~ borough + factor(daytime) + num_light + num_signal  + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
-
-summary(fit2) %&gt;% 
-  broom::tidy() %&gt;% 
-  knitr::kable()</code></pre>
+<div id="result" class="section level3">
+<h3>Result</h3>
+<p><strong>1. Correlation Matrix</strong></p>
+<p><img src="Regression_files/figure-html/unnamed-chunk-10-1.png" width="100%" /></p>
+<p>Correlation between most variables is acceptable, but relationship between weathertype sunny and weathertype rain is above 70%, which indicate collinearity. When establishing model, we should always know that weathertype(sunny) shows most of information that weathertype(rain) contains.</p>
+<p><strong>2 Box-Cox Transformation</strong></p>
+<p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
+<p>Box-Cox method applies a transformation by raising Y to different power, as we can see above, λ is close to 0, so we need to do natural logarithm transformation, turn Y into ln(Y).</p>
+<p><strong>3. MLR result</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -580,120 +355,155 @@ summary(fit2) %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">15.4482395</td>
-<td align="right">3.4020295</td>
-<td align="right">4.5408893</td>
-<td align="right">0.0000058</td>
+<td align="right">2.1069024</td>
+<td align="right">0.1246978</td>
+<td align="right">16.8960648</td>
+<td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">boroughBROOKLYN</td>
-<td align="right">31.8180032</td>
-<td align="right">1.1502285</td>
-<td align="right">27.6623334</td>
+<td align="right">0.7095696</td>
+<td align="right">0.0237988</td>
+<td align="right">29.8153287</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughMANHATTAN</td>
-<td align="right">9.2800277</td>
-<td align="right">1.0160053</td>
-<td align="right">9.1338379</td>
+<td align="right">0.3125737</td>
+<td align="right">0.0210182</td>
+<td align="right">14.8715425</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">boroughQUEENS</td>
-<td align="right">21.9201360</td>
-<td align="right">1.9504287</td>
-<td align="right">11.2386244</td>
+<td align="right">0.5748078</td>
+<td align="right">0.0403652</td>
+<td align="right">14.2401684</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughSTATEN ISLAND</td>
-<td align="right">-21.8225745</td>
-<td align="right">0.9402364</td>
-<td align="right">-23.2096671</td>
+<td align="right">-1.4204219</td>
+<td align="right">0.0194501</td>
+<td align="right">-73.0292005</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">factor(daytime)1</td>
-<td align="right">42.9750883</td>
-<td align="right">0.5242656</td>
-<td align="right">81.9719809</td>
+<td align="right">1.2576627</td>
+<td align="right">0.0108625</td>
+<td align="right">115.7805056</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
+<td align="left">weathertypehaze</td>
+<td align="right">0.1887726</td>
+<td align="right">0.1089203</td>
+<td align="right">1.7331251</td>
+<td align="right">0.0831588</td>
+</tr>
+<tr class="even">
+<td align="left">weathertypemist</td>
+<td align="right">0.0908404</td>
+<td align="right">0.1062359</td>
+<td align="right">0.8550817</td>
+<td align="right">0.3925626</td>
+</tr>
+<tr class="odd">
+<td align="left">weathertyperain</td>
+<td align="right">0.1375273</td>
+<td align="right">0.1028581</td>
+<td align="right">1.3370581</td>
+<td align="right">0.1812879</td>
+</tr>
+<tr class="even">
+<td align="left">weathertypesnow</td>
+<td align="right">0.1427384</td>
+<td align="right">0.1055153</td>
+<td align="right">1.3527743</td>
+<td align="right">0.1762124</td>
+</tr>
+<tr class="odd">
+<td align="left">weathertypesunny</td>
+<td align="right">0.1293622</td>
+<td align="right">0.1030361</td>
+<td align="right">1.2555038</td>
+<td align="right">0.2093771</td>
+</tr>
+<tr class="even">
 <td align="left">num_light</td>
-<td align="right">0.0053245</td>
-<td align="right">0.0030628</td>
-<td align="right">1.7384195</td>
-<td align="right">0.0822220</td>
+<td align="right">0.0000613</td>
+<td align="right">0.0000634</td>
+<td align="right">0.9673223</td>
+<td align="right">0.3334477</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">num_signal</td>
-<td align="right">0.0004146</td>
-<td align="right">0.0011211</td>
-<td align="right">0.3698292</td>
-<td align="right">0.7115314</td>
+<td align="right">0.0000139</td>
+<td align="right">0.0000232</td>
+<td align="right">0.5984272</td>
+<td align="right">0.5495925</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">factor(prep)1</td>
-<td align="right">1.1520531</td>
-<td align="right">0.5578519</td>
-<td align="right">2.0651594</td>
-<td align="right">0.0389790</td>
+<td align="right">0.0367187</td>
+<td align="right">0.0155665</td>
+<td align="right">2.3588220</td>
+<td align="right">0.0183860</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">vehiclepassenger vehicle</td>
-<td align="right">-11.6503456</td>
-<td align="right">3.2052379</td>
-<td align="right">-3.6347834</td>
-<td align="right">0.0002821</td>
+<td align="right">0.2480838</td>
+<td align="right">0.0665297</td>
+<td align="right">3.7289178</td>
+<td align="right">0.0001953</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">vehiclesedan</td>
-<td align="right">-7.3641146</td>
-<td align="right">3.1839351</td>
-<td align="right">-2.3128972</td>
-<td align="right">0.0207841</td>
+<td align="right">0.3523761</td>
+<td align="right">0.0660694</td>
+<td align="right">5.3334211</td>
+<td align="right">0.0000001</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">vehiclesport utility vehicle</td>
-<td align="right">-7.4913107</td>
-<td align="right">3.2174571</td>
-<td align="right">-2.3283327</td>
-<td align="right">0.0199493</td>
-</tr>
-<tr class="odd">
-<td align="left">vehicletaxi</td>
-<td align="right">-5.6507030</td>
-<td align="right">4.0233894</td>
-<td align="right">-1.4044634</td>
-<td align="right">0.1602668</td>
+<td align="right">0.2814519</td>
+<td align="right">0.0667477</td>
+<td align="right">4.2166519</td>
+<td align="right">0.0000254</td>
 </tr>
 <tr class="even">
-<td align="left">vehicletruck</td>
-<td align="right">-1.9681685</td>
-<td align="right">7.6653485</td>
-<td align="right">-0.2567618</td>
-<td align="right">0.7973773</td>
+<td align="left">vehicletaxi</td>
+<td align="right">0.4331257</td>
+<td align="right">0.0833836</td>
+<td align="right">5.1943774</td>
+<td align="right">0.0000002</td>
 </tr>
 <tr class="odd">
+<td align="left">vehicletruck</td>
+<td align="right">-0.5312716</td>
+<td align="right">0.1587091</td>
+<td align="right">-3.3474554</td>
+<td align="right">0.0008239</td>
+</tr>
+<tr class="even">
 <td align="left">holiday1</td>
-<td align="right">-8.2159129</td>
-<td align="right">1.0962308</td>
-<td align="right">-7.4946929</td>
+<td align="right">-0.2011300</td>
+<td align="right">0.0229079</td>
+<td align="right">-8.7799364</td>
 <td align="right">0.0000000</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>par(mfrow = c(2,2))
-plot(fit2)</code></pre>
-<p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
-<pre class="r"><code>cor(
-  cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
-        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
-  ) %&gt;% 
-  corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 45, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
-<p><img src="Regression_files/figure-html/unnamed-chunk-12-1.png" width="100%" /></p>
+<p>Above is result of multiple linear regression, it indicates that effect of borough is significant, BRONX works as reference, and all four indicator variables’ p-value is much smaller than 0.05. Brooklyn, Manhattan and Queens have a signifcantly greater number of accidents, while Staten Island has a signifcantly lower number of collision.</p>
+<p>Besides that, p-value of “factor(daytime)1” is below 0.05. So this indicator variable is significant. Comparing with night, there are more accidents during the day.</p>
+<p>p-value of num_light and num_signal is below 0.05. As for street light and traffic signal, their influence is not strong enough, people always believe that the presence of street light and traffic signal can reduce fatal road crash, which seems to be not reasonable statistically.</p>
+<p>p-value of “factor(prep)1” is smaller than 0.05. Increasing of rainfall will significantly raise the number of accidents. However, the influence of weather is not significant.</p>
+<p>The effect of “vehicle” is significant. “others” works as reference variables. All five indicator variables “vehiclepassenger vehicle”, “vehiclesedan”, “vehicletruck”, “vehicletaxi” and “vehiclesport utility vehicle” are significant. Driving passenger vehicle, sedan and sport utility vehcle will have a higher risk of involving in accidents, while driving truck can reduce the risk of accidents.</p>
+<p>Last but not least, the influence of “holiday1” is also significant. It means that during holiday and weekend, there will be fewer accidents.</p>
+<p><strong>3. Model diagnostics</strong></p>
+<p><img src="Regression_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
+<p>The four graph above prove the homoscedasticity of residual, prove that rsidual’s expected value is 0, besides, residual is normality. No influential observation shows in the dataset. All assumption is satisfied.</p>
 </div>
 
 

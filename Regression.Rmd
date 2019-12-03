@@ -1,7 +1,5 @@
 ---
-title: "regression"
-author: "Weijia Xiong"
-date: "12/1/2019"
+title: "Regression"
 output: html_document
 ---
 
@@ -15,9 +13,9 @@ library(leaflet)
 library(RColorBrewer)
 library(corrplot)
 knitr::opts_chunk$set(
-	echo = TRUE,
-	warning = FALSE,
-	fig.width = 10, 
+echo = TRUE,
+warning = FALSE,
+fig.width = 10, 
   fig.height = 10,
   out.width = "100%"
 )
@@ -30,7 +28,9 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-```{r}
+```{r include=FALSE}
+## Data import
+## Import accident data
 data_2018 = 
   read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
@@ -38,8 +38,7 @@ newnames = colnames(data_2018) %>%
   str_replace("number_of_","") 
 names(data_2018) = newnames
 
-tidy_data = 
-data_2018 %>% 
+tidy_data = data_2018 %>% 
   mutate(
     date_complete = date 
   ) %>% 
@@ -59,9 +58,8 @@ data_2018 %>%
   drop_na(borough)
 ```
 
-
-## Weather data
-```{r}
+```{r include=FALSE}
+## Import weather data
 climate_df = 
   read_csv("./large_data/climate.csv") %>% 
   janitor::clean_names() %>% 
@@ -101,8 +99,8 @@ climate_df %>%
   )
 ```
 
-## Light data
-```{r}
+```{r include=FALSE}
+## Import street light and traffic signal data
 light_data = 
   read_csv("./large_data/night_accident.csv") %>% 
   select(-X1)
@@ -115,8 +113,8 @@ light_data =
   cbind(light_data,num_signal = pull(signal_data,num_signal))
 ```
 
-## Vehicle data
-```{r}
+```{r include=FALSE}
+## Import vehicle data
 vehicle_type_data = 
   tidy_data %>% 
   mutate(
@@ -128,22 +126,8 @@ vehicle_type_data =
 
 ```
 
-
-
-
-## Regression 
-```{r}
-boro_hour_collision = 
-tidy_data %>%
-  group_by(borough,month,day,hour) %>%
-  summarise(
-    collisionnumber = mean(n())
-  )
-```
-
-## hour by 2 category
-
-```{r}
+```{r include=FALSE}
+## Generate Y data, count number of accident by date, borough and hour(seperates hour by 2 categories)
 boro_daytime_collision = 
   tidy_data %>%  
   mutate(
@@ -155,9 +139,9 @@ boro_daytime_collision =
   )
 ```
 
-
-### weather
-```{r}
+```{r include=FALSE}
+## tidy weather data, join it with Y, hour and borough data
+## weather data include climate and precipitation
 weathertype =
   all_day_weather_df %>% 
   separate(date, sep = '-',into = c("year","month","day")) %>% 
@@ -190,15 +174,17 @@ boro_daytime_weather =
   left_join(boro_daytime_weather,prep_data,by = c('month','day','daytime'))
 ```
 
-### lights
-```{r}
+```{r include=FALSE}
+## join signal and street light data with Y, weather, hour and borough data
 boro_daytime_weather_light =
   left_join(boro_daytime_weather,light_data,by = c("month","day","borough")) %>% 
   select(-num_accident)
 ```
 
-## vehicle
-```{r}
+```{r include=FALSE}
+## counts the vehicle type that have greatest number of cars at specific hour, borough and date, 
+## join it with Y, weather, street light, traffic signal, hour and borough data
+## hour serves as a factor, it is seperates into 2 categories
 vehicle_data = 
 vehicle_type_data %>% 
   group_by(borough,month,day,daytime) %>% 
@@ -209,9 +195,8 @@ boro_daytime_weather_light_vt = left_join(boro_daytime_weather_light, vehicle_da
 
 ```
 
-
-## holiday
-```{r}
+```{r include=FALSE}
+## join holiday data with Y, weather, vehicle, hour and borough data
 boro_daytime_weather_light_vt_hol = 
   boro_daytime_weather_light_vt %>% 
   mutate(date_complete = paste(month,day, "2018",sep = "/"),
@@ -233,20 +218,33 @@ boro_daytime_weather_light_vt_hol =
 
 ```
 
+### Method
 
-```{r}
-fit2 = lm(collisionnumber ~ borough + factor(daytime) + num_light + num_signal  + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+In this research, we try to find relationship between collision and several factors. As a result, accident numbers is considered to be outcome (dependent variable), exposure of interest below are considered to be independent variables. Multiple linear regression is conducted to testify if correlation between outcome and predictors is significant.
 
-summary(fit2) %>% 
-  broom::tidy() %>% 
-  knitr::kable()
+*1.collisionnumber: accident number at specific borough, date and time*
 
-par(mfrow = c(2,2))
-plot(fit2)
-```
+*2.daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)*
 
+*3.borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.*
 
-```{r}
+*4.num_light: numbers of unfinished street light services*  
+
+*5.num_signal: number of nufinished traffic signal services*
+
+*6.weathertype: weather type (fog, haze, mist, rain, snow and sunny)*
+
+*7.prep: percipitation*
+
+*8.vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date*
+
+*9.holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.*
+
+### Result
+
+**1. Correlation Matrix**
+
+```{r echo=FALSE}
 cor(
   cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
         model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
@@ -254,3 +252,46 @@ cor(
   corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
+Correlation between most variables is acceptable, but relationship between weathertype sunny and weathertype rain is above 70%, which indicate collinearity. When establishing model, we should always know that weathertype(sunny) shows most of information that weathertype(rain) contains.
+
+**2 Box-Cox Transformation**
+
+```{r echo=FALSE, fig.width = 5, fig.height = 5}
+fit2 = lm(collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+MASS::boxcox(fit2)
+```
+
+Box-Cox method applies a transformation by raising Y to different power, as we can see above, λ is close to 0, so we need to do natural logarithm transformation, turn Y into ln(Y).
+
+**3. MLR result**
+
+```{r echo=FALSE}
+boro_daytime_weather_light_vt_hol = boro_daytime_weather_light_vt_hol %>%
+  mutate(ln_collisionnumber = log(collisionnumber, base = exp(1)))
+fit2 = lm(ln_collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+
+summary(fit2) %>% 
+  broom::tidy() %>% 
+  knitr::kable()
+```
+
+Above is result of multiple linear regression, it indicates that effect of borough is significant, BRONX works as reference, and all four indicator variables' p-value is much smaller than 0.05. Brooklyn, Manhattan and Queens have a signifcantly greater number of accidents, while Staten Island has a signifcantly lower number of collision. 
+
+Besides that, p-value of "factor(daytime)1" is below 0.05. So this indicator variable is significant. Comparing with night, there are more accidents during the day. 
+
+p-value of num_light and num_signal is below 0.05. As for street light and traffic signal, their influence is not strong enough, people always believe that the presence of street light and traffic signal can reduce fatal road crash, which seems to be not reasonable statistically. 
+
+p-value of "factor(prep)1" is smaller than 0.05. Increasing of rainfall will significantly raise the number of accidents. However, the influence of weather is not significant.
+
+The effect of "vehicle" is significant. "others" works as reference variables. All five indicator variables "vehiclepassenger vehicle", "vehiclesedan", "vehicletruck", "vehicletaxi" and "vehiclesport utility vehicle" are significant. Driving passenger vehicle, sedan and sport utility vehcle will have a higher risk of involving in accidents, while driving truck can reduce the risk of accidents.
+
+Last but not least, the influence of "holiday1" is also significant. It means that during holiday and weekend, there will be fewer accidents.
+
+**3. Model diagnostics**
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+plot(fit2)
+```
+
+The four graph above prove the homoscedasticity of residual, prove that rsidual's expected value is 0, besides, residual is normality. No influential observation shows in the dataset. All assumption is satisfied.
