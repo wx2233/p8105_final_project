@@ -75,9 +75,8 @@ vehicle_type_data =
   tidy_data %>% 
   mutate(
     vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle")
-    ) %>% 
-  filter( vehicle_type %in% c("taxi","passenger vehicle","truck","sport utility vehicle")) %>% 
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
+    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
   group_by(vehicle_type,hour) %>% 
   summarize(
     n = n()
