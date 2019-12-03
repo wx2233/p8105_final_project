@@ -135,6 +135,10 @@ collision_weather %>%
 ggplotly(weather_type_plot)
 ```
 
+### Comments: 
+
+### It is surprising to see that sunny weather is the third most common weather type when car accidents tend to happen. On the other hand, people might be going outside more on sunny days, which can cause an increase in car accidents. Accident number in this plot is strongly related to how likely people will go out under different weather conditions. More people being outside means more accidents. 
+
 
 ### Number of Accident by Degree of Precipitaion over a day
 
@@ -193,4 +197,6 @@ daily_weather_collision %>%
 ggplotly(daily_weather_plot)
 ```
 
+### Comments: 
 
+### More accidents happen during heavy/moderate precipitation as compared to light precipitation, which match our original hypothesis. 
