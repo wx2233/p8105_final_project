@@ -12,7 +12,7 @@
 
 
 
-<title>About</title>
+<title>Conclusion</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,9 +20,6 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -253,63 +250,6 @@ $(document).ready(function () {
 
 
 
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-
 
 </head>
 
@@ -317,16 +257,6 @@ div.tocify {
 
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -412,56 +342,26 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore"><strong>About</strong></h1>
+<h1 class="title toc-ignore">Conclusion</h1>
 
 </div>
 
 
-<center>
-<img src="image/car_collision.jpg" style="width:50%">
-</center>
-<p><br></p>
-<div id="motivation" class="section level3">
-<h3><strong>Motivation</strong></h3>
-<p>According to <a href="https://www.driverknowledge.com/car-accident-statistics/#:~:targetText=U.S.%20every%20year%20is%206,experience%20permanent%20injuries%20every%20year.">Driver knowledge</a>, there are 6 million average number of car accidents in the U.S every year, more than 90 people died in accidents everyday. The severity of car accidents raised our attention on finding factors impacting car accidents numbers. Through this report, we tried to explore the association between accident number and weather, time of a day, holidays, number of borken street lights or traffic lights,number of restaurant in certain area. We hope anyone who go over our report can get useful information, meanwhile raise security awareness.</p>
-<p><br></p>
+<div id="regression-model" class="section level3">
+<h3>(Regression Model)</h3>
 </div>
-<div id="methods" class="section level3">
-<h3><strong>Methods</strong></h3>
-<p>Data from five sources were considered for this project. The data sources, scraping methods and cleaning procedures for each dataset are described below.</p>
-<ul>
-<li><p>The Github repository for this project can be found <a href="https://github.com/ChristineLong/p8105_Final_Project">here</a>.</p></li>
-<li><p>The final website can be found <a href="https://eshea6.github.io/us_gun_violence.github.io/">here</a>, and corresponding Github repository for the website is located <a href="https://github.com/eshea6/us_gun_violence.github.io">here</a>.</p></li>
-<li><p>The final report is housed in a repository <a href="https://github.com/devon-m2/p8105_Gun-Violence_Final-Report">here</a>.</p></li>
-</ul>
-<p><br></p>
+<div id="we-do-find-some-very-meaningful-trends-using-our-dataset.-first-avoid-accident-prone-hours-and-holidays.-accidents-are-more-likely-to-happen-during-rush-hours-while-the-most-fatal-ones-happen-early-in-the-morning-6-oclock-and-at-night-9-oclock.-moreover-holiday-weekends-are-more-traffic-prone.-second-have-good-driving-habits.-keep-safe-distance-and-backing-up-safely-are-always-the-keys-to-prevent-a-large-proportion-of-accidents.-in-addition-one-should-always-pay-special-attention-when-changing-lanes-in-manhattan.-third-stay-away-from-bad-weather-as-more-accidents-are-likely-to-happen-during-severe-weather." class="section level3">
+<h3>We do find some very meaningful trends using our dataset. First, avoid accident prone hours and holidays. Accidents are more likely to happen during rush hours, while the most fatal ones happen early in the morning (6 o’clock) and at night (9 o’clock). Moreover, holiday weekends are more traffic prone. Second, have good driving habits. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. Third, stay away from bad weather, as more accidents are likely to happen during severe weather.</h3>
 </div>
-<div id="data" class="section level3">
-<h3><strong>Data</strong></h3>
-<p><strong><em>NYPD Motor Vehicle Collisions-Crashes Data</em></strong> can be accessed <a href="https://www.kaggle.com/jameslko/gun-violence-data">here</a> and is from the <a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">NYC Open Data</a>. NYC Open Data is free public data published by New York City agencies and other partners. The Motor Vehicle Collisions data tables contain information from all police reported motor vehicle collisions in NYC. The police report <a href="https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/documents/ny_overlay_mv-104an_rev05_2004.pdf">MV104-AN</a> is required to be filled out for collisions where someone is injured or killed, or where there is at least $1000 worth of damage.</p>
-<p><strong><em>DOHMH New York City Restaurant Inspection Results Data</em></strong> was obtained from the <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">NYC Open Data</a>. The dataset was used to assess the association between the restaurant number and alcohol involved collision number.</p>
-<p><strong><em>Gun law scores of states</em></strong> is created by the <a href="https://lawcenter.giffords.org/scorecard/#rankings">Giffords Law Center</a> using “a comprehensive grading rubric that assigns positive point values to gun safety policies, such as private-sale background checks and extreme risk protection orders, and negative point values to dangerous laws, such as permitless concealed carry”.</p>
-<p>Data on <strong><em>gun license applications</em></strong> was taken from the <a href="https://www.statista.com/statistics/249687/number-of-background-checks-done-by-the-nics-in-the-us-by-state/">National Instant Criminal Background Check System (NICS)</a>, which is used by Federal Firearms Licensees (FFLs) to instantly determine whether a prospective buyer is eligible to buy firearms or explosives. This data is used to approximate how many people tried to apply for gun licenses in each state.</p>
-<p>Data on the <strong><em>number of federal firearms licensees in the U.S.</em></strong> was downloaded from <a href="https://www.statista.com/statistics/215670/number-of-federal-firearms-licensees-in-the-us-by-state/">Statista</a>. This source pulls data from the U.S. Bureau of Alcohol, Tobacco, Firearms and Explosives (ATF), and is used to approximate how many people actually got approved for gun licenses in each state.</p>
-<p><strong><em>State total population data</em></strong> was also taken from <a href="https://www.statista.com/statistics/183497/population-in-the-federal-states-of-the-us/">Statista</a>. It was used to standardize the number of approved licenses and applications in different states.</p>
-<p><strong><em>Unemployment data</em></strong> come from <a href="https://fred.stlouisfed.org/search?st=unemployment+rate">FRED economic research</a>. Each dataset describe percentage of unemployment in each state, not seasonally adjusted.</p>
-<p><strong><em>Chronic disease related data</em></strong> extract from <a href="https://catalog.data.gov/dataset/u-s-chronic-disease-indicators-cdi">data.gov</a>. Chronic disease related information, such as rate of heavy drinking, mental healthness, poverty, etc, in each state each year.</p>
-<p><br></p>
+<div id="in-conclusion-our-analysis-lead-us-to-discover-some-important-causes-for-car-accidents.-however-we-faced-issues-of-missing-data-and-non-uniform-observation-names-when-we-are-trying-to-analyze-contributing-factors-and-vehicle-types.-the-second-highest-contributing-factor-is-unspecified-and-knowing-the-right-contributing-factors-could-play-a-crucial-rule-when-trying-to-reduce-car-accident-numbers.-also-most-vehicle-types-are-recorded-in-different-ways-which-increased-the-difficulty-to-classify-them.-better-conclusion-could-be-drawn-if-the-data-collecting-mechanism-is-adopted." class="section level3">
+<h3>In conclusion, our analysis lead us to discover some important causes for car accidents. However, we faced issues of missing data and non uniform observation names when we are trying to analyze contributing factors and vehicle types. The second highest contributing factor is unspecified, and knowing the right contributing factors could play a crucial rule when trying to reduce car accident numbers. Also, most vehicle types are recorded in different ways, which increased the difficulty to classify them. Better conclusion could be drawn if the data collecting mechanism is adopted.</h3>
 </div>
-<div id="screencast" class="section level3">
-<h3><strong>Screencast</strong></h3>
-<p>This screencast illustrates our project, emphasizing our motivation, data analysis, and results.</p>
-<center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/RDvGwWrEWo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
-</center>
-<p><br></p>
+<div id="we-hope-by-doing-this-analysis-people-could-travel-more-safely-and-wisely-in-new-york-city." class="section level3">
+<h3>We hope by doing this analysis, people could travel more safely and wisely in New York City.</h3>
 </div>
 
 
 
-</div>
-</div>
 
 </div>
 
@@ -494,32 +394,6 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
