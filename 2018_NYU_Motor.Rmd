@@ -164,19 +164,15 @@ ggplotly(cause_by_boro_plot)
 
 ```{r}
 data_2018 = tidy_data
-
-data_2018 = rename(data_2018, long = latitude, lat = longitude)
-
+map_data = rename(data_2018, long = latitude, lat = longitude) 
 pal <- colorNumeric(
-  palette = "viridis",
-  domain = data_2018$persons_injured)
-
-data_2018 %>% 
+  palette = "Accent",
+  domain = map_data$persons_injured)
+map_data %>% 
+  filter(persons_injured > 0) %>% 
   filter(!(lat < "-70" | lat >= "-75")) %>% 
-  filter(persons_injured > 2) %>% 
-    mutate(
-    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>% 
-  sample_n(1875) %>% 
+  mutate(
+    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>%
   leaflet() %>% 
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
@@ -189,11 +185,6 @@ data_2018 %>%
     color = ~pal(persons_injured),
     radius = 0.5,
     popup = ~ label) 
-
-data_2018 %>% 
-  group_by(borough) %>% 
-  summarise(n())
-
 ```
 
 ```{r}
