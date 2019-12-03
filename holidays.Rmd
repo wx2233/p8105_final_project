@@ -251,3 +251,9 @@ plot_day = ggplotly(plot_day)
 plot_day
 ```
 
+### Comments: 
+
+### Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured. 
+
+### So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to. 
+
