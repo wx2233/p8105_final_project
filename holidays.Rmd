@@ -5,6 +5,66 @@ date: "2019/12/2"
 output: html_document
 ---
 
+```{r}
+library(tidyverse)
+library(plotly)
+library(rvest)
+library(readr)
+library(viridis)
+library(leaflet)
+library(patchwork)
+library(RColorBrewer)
+library(corrplot)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = element_text(face = "bold")))
+
+```
+
+```{r}
+data_2018 = 
+  read_csv("./data/2018data.csv") %>% 
+  janitor::clean_names() 
+newnames = colnames(data_2018) %>% 
+  str_replace("number_of_","") 
+names(data_2018) = newnames
+
+tidy_data = 
+data_2018 %>% 
+  mutate(
+    date_complete = date 
+  ) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  separate(time, into = c("hour", "minute"), sep = ":") %>%
+  mutate(
+    date_paste = as.Date(paste("2018",month,day,sep = "-"))
+  ) %>% 
+  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
+  rename("vehicle_type" = "vehicle_type_code_1",
+         "cause" = "contributing_factor_vehicle_1") %>% 
+  mutate( day = as.numeric(day),
+          month = as.numeric(month),
+          hour = as.numeric(hour),
+          minute = as.numeric(minute),
+          latitude = replace_na(latitude,0),
+          vehicle_type = str_to_lower(vehicle_type)
+  ) %>%
+  filter( latitude != 0) %>% 
+  drop_na(borough)
+```
+
+
 ```{r,include=FALSE}
 data_2018 = tidy_data
 
