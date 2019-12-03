@@ -6,7 +6,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(plotly)
 library(rvest)

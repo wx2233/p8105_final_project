@@ -1,11 +1,13 @@
 ---
-title: "holidays"
-author: "Guangling Xu"
-date: "2019/12/2"
-output: html_document
+title: "Holidays"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(plotly)
 library(rvest)
@@ -32,7 +34,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = elemen
 
 ```
 
-```{r}
+```{r include=FALSE}
 data_2018 = 
   read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
@@ -191,7 +193,7 @@ holiday_data_weekend %>%
   summarise(total_injured = sum(persons_injured))
 ```
 
-```{r, include=FALSE}
+```{r include=FALSE}
 bronx = 
   holiday_data_weekend %>% 
   filter(borough == "BRONX") %>% 
@@ -228,7 +230,7 @@ holiday_borough_weekend =
   filter(holiday!="No Holiday")
 ```
 
-```{r, include=FALSE}
+```{r}
 plot_weekend = 
 pivot_longer(
     holiday_borough_weekend, 
@@ -253,7 +255,7 @@ plot_day
 
 ### Comments: 
 
-### Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured. 
+Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured. 
 
-### So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to. 
+So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to. 
 

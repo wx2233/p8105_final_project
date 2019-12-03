@@ -1,12 +1,14 @@
 ---
-title: "weather"
-author: "Guangling Xu"
-date: "2019/12/2"
-output: html_document
+title: "Weather"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 ### Number of Accident by weather
 
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(plotly)
 library(rvest)
@@ -34,7 +36,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = elemen
 
 
 ## load collision data
-```{r}
+```{r include=FALSE}
 data_2018 = 
   read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
@@ -137,7 +139,7 @@ ggplotly(weather_type_plot)
 
 ### Comments: 
 
-### It is surprising to see that sunny weather is the third most common weather type when car accidents tend to happen. On the other hand, people might be going outside more on sunny days, which can cause an increase in car accidents. Accident number in this plot is strongly related to how likely people will go out under different weather conditions. More people being outside means more accidents. 
+It is surprising to see that sunny weather is the third most common weather type when car accidents tend to happen. On the other hand, people might be going outside more on sunny days, which can cause an increase in car accidents. Accident number in this plot is strongly related to how likely people will go out under different weather conditions. More people being outside means more accidents. 
 
 
 ### Number of Accident by Degree of Precipitaion over a day
@@ -199,4 +201,4 @@ ggplotly(daily_weather_plot)
 
 ### Comments: 
 
-### More accidents happen during heavy/moderate precipitation as compared to light precipitation, which match our original hypothesis. 
+More accidents happen during heavy/moderate precipitation as compared to light precipitation, which match our original hypothesis. 

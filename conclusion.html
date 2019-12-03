@@ -20,6 +20,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -250,6 +253,63 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -257,6 +317,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -311,7 +381,7 @@ $(document).ready(function () {
       <a href="restaurant.html">Restaurant</a>
     </li>
     <li>
-      <a href="holiday.html">Holiday</a>
+      <a href="holidays.html">Holiday</a>
     </li>
   </ul>
 </li>
@@ -347,21 +417,17 @@ $(document).ready(function () {
 </div>
 
 
-<div id="regression-model" class="section level3">
-<h3>(Regression Model)</h3>
-</div>
-<div id="we-do-find-some-very-meaningful-trends-using-our-dataset.-first-avoid-accident-prone-hours-and-holidays.-accidents-are-more-likely-to-happen-during-rush-hours-while-the-most-fatal-ones-happen-early-in-the-morning-6-oclock-and-at-night-9-oclock.-moreover-holiday-weekends-are-more-traffic-prone.-second-have-good-driving-habits.-keep-safe-distance-and-backing-up-safely-are-always-the-keys-to-prevent-a-large-proportion-of-accidents.-in-addition-one-should-always-pay-special-attention-when-changing-lanes-in-manhattan.-third-stay-away-from-bad-weather-as-more-accidents-are-likely-to-happen-during-severe-weather." class="section level3">
-<h3>We do find some very meaningful trends using our dataset. First, avoid accident prone hours and holidays. Accidents are more likely to happen during rush hours, while the most fatal ones happen early in the morning (6 o’clock) and at night (9 o’clock). Moreover, holiday weekends are more traffic prone. Second, have good driving habits. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. Third, stay away from bad weather, as more accidents are likely to happen during severe weather.</h3>
-</div>
-<div id="in-conclusion-our-analysis-lead-us-to-discover-some-important-causes-for-car-accidents.-however-we-faced-issues-of-missing-data-and-non-uniform-observation-names-when-we-are-trying-to-analyze-contributing-factors-and-vehicle-types.-the-second-highest-contributing-factor-is-unspecified-and-knowing-the-right-contributing-factors-could-play-a-crucial-rule-when-trying-to-reduce-car-accident-numbers.-also-most-vehicle-types-are-recorded-in-different-ways-which-increased-the-difficulty-to-classify-them.-better-conclusion-could-be-drawn-if-the-data-collecting-mechanism-is-adopted." class="section level3">
-<h3>In conclusion, our analysis lead us to discover some important causes for car accidents. However, we faced issues of missing data and non uniform observation names when we are trying to analyze contributing factors and vehicle types. The second highest contributing factor is unspecified, and knowing the right contributing factors could play a crucial rule when trying to reduce car accident numbers. Also, most vehicle types are recorded in different ways, which increased the difficulty to classify them. Better conclusion could be drawn if the data collecting mechanism is adopted.</h3>
-</div>
-<div id="we-hope-by-doing-this-analysis-people-could-travel-more-safely-and-wisely-in-new-york-city." class="section level3">
-<h3>We hope by doing this analysis, people could travel more safely and wisely in New York City.</h3>
+<div id="regression-model" class="section level2">
+<h2>(Regression Model)</h2>
+<p>We do find some very meaningful trends using our dataset. First, avoid accident prone hours and holidays. Accidents are more likely to happen during rush hours, while the most fatal ones happen early in the morning (6 o’clock) and at night (9 o’clock). Moreover, holiday weekends are more traffic prone. Second, have good driving habits. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. Third, stay away from bad weather, as more accidents are likely to happen during severe weather.</p>
+<p>In conclusion, our analysis lead us to discover some important causes for car accidents. However, we faced issues of missing data and non uniform observation names when we are trying to analyze contributing factors and vehicle types. The second highest contributing factor is unspecified, and knowing the right contributing factors could play a crucial rule when trying to reduce car accident numbers. Also, most vehicle types are recorded in different ways, which increased the difficulty to classify them. Better conclusion could be drawn if the data collecting mechanism is adopted.</p>
+<p>We hope by doing this analysis, people could travel more safely and wisely in New York City.</p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -394,6 +460,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

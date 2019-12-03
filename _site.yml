@@ -20,7 +20,7 @@ navbar:
       - text: "Restaurant"
         href: restaurant.html
       - text: "Holiday"
-        href: holiday.html
+        href: holidays.html
     - text: "Regression Analysis"
       href: Regression.html
     - text: "Conclusions"

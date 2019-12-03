@@ -10,10 +10,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Guangling Xu" />
 
 
-<title>holidays</title>
+<title>Holidays</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,7 +20,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
@@ -255,7 +258,67 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -265,6 +328,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -319,7 +392,7 @@ $(document).ready(function () {
       <a href="restaurant.html">Restaurant</a>
     </li>
     <li>
-      <a href="holiday.html">Holiday</a>
+      <a href="holidays.html">Holiday</a>
     </li>
   </ul>
 </li>
@@ -348,97 +421,54 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">holidays</h1>
-<h4 class="author">Guangling Xu</h4>
-<h4 class="date">2019/12/2</h4>
+
+<h1 class="title toc-ignore">Holidays</h1>
 
 </div>
 
 
-<pre class="r"><code>library(tidyverse)
-library(plotly)
-library(rvest)
-library(readr)
-library(viridis)
-library(leaflet)
-library(patchwork)
-library(RColorBrewer)
-library(corrplot)
-knitr::opts_chunk$set(
-    echo = TRUE,
-    warning = FALSE,
-    fig.width = 8, 
-  fig.height = 6,
-  out.width = &quot;90%&quot;
-)
-options(
-  ggplot2.continuous.colour = &quot;viridis&quot;,
-  ggplot2.continuous.fill = &quot;viridis&quot;
-)
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;,plot.title = element_text(face = &quot;bold&quot;)))</code></pre>
-<pre class="r"><code>data_2018 = 
-  read_csv(&quot;./data/2018data.csv&quot;) %&gt;% 
-  janitor::clean_names() </code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   TIME = col_time(format = &quot;&quot;),
-##   `ZIP CODE` = col_double(),
-##   LATITUDE = col_double(),
-##   LONGITUDE = col_double(),
-##   `NUMBER OF PERSONS INJURED` = col_double(),
-##   `NUMBER OF PERSONS KILLED` = col_double(),
-##   `NUMBER OF PEDESTRIANS INJURED` = col_double(),
-##   `NUMBER OF PEDESTRIANS KILLED` = col_double(),
-##   `NUMBER OF CYCLIST INJURED` = col_double(),
-##   `NUMBER OF CYCLIST KILLED` = col_double(),
-##   `NUMBER OF MOTORIST INJURED` = col_double(),
-##   `NUMBER OF MOTORIST KILLED` = col_double(),
-##   COLLISION_ID = col_double()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<pre class="r"><code>newnames = colnames(data_2018) %&gt;% 
-  str_replace(&quot;number_of_&quot;,&quot;&quot;) 
-names(data_2018) = newnames
+<pre class="r"><code>plot_weekend = 
+pivot_longer(
+    holiday_borough_weekend, 
+    bronx_total_injured:staten_island_total_injured,
+    names_to = &quot;borough&quot;, 
+    values_to = &quot;person_injured&quot;) %&gt;% 
+  ggplot(aes(x = reorder(holiday, -total), y = person_injured, fill = borough)) +
+  geom_bar(stat=&quot;identity&quot;) +
+  theme(legend.position = &quot;right&quot;, axis.text.x = element_text(angle = 45)) +
+  labs(
+    title = &quot;Persons Injured by Car Crashs on \n Federal Holidays Weekends (2018)&quot;,
+    x = &quot;Holiday Weekends&quot;,
+    y = &quot;Number Persons Injured&quot;) +
+  scale_fill_discrete(name = &quot;Borough&quot;, labels = c(&quot;Bronx&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;, &quot;Queens&quot;, &quot;Staten Island&quot;))
 
-tidy_data = 
-data_2018 %&gt;% 
-  mutate(
-    date_complete = date 
-  ) %&gt;% 
-  separate(date, into = c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), sep = &quot;/&quot;) %&gt;% 
-  separate(time, into = c(&quot;hour&quot;, &quot;minute&quot;), sep = &quot;:&quot;) %&gt;%
-  mutate(
-    date_paste = as.Date(paste(&quot;2018&quot;,month,day,sep = &quot;-&quot;))
-  ) %&gt;% 
-  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %&gt;% 
-  rename(&quot;vehicle_type&quot; = &quot;vehicle_type_code_1&quot;,
-         &quot;cause&quot; = &quot;contributing_factor_vehicle_1&quot;) %&gt;% 
-  mutate( day = as.numeric(day),
-          month = as.numeric(month),
-          hour = as.numeric(hour),
-          minute = as.numeric(minute),
-          latitude = replace_na(latitude,0),
-          vehicle_type = str_to_lower(vehicle_type)
-  ) %&gt;%
-  filter( latitude != 0) %&gt;% 
-  drop_na(borough)</code></pre>
+plot_weekend = ggplotly(plot_weekend)
+plot_weekend</code></pre>
+<div id="htmlwidget-09d6143e76b3d9fedc06" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-09d6143e76b3d9fedc06">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[276,249,248,237,226,212,198],"x":[1,2,3,4,5,6,7],"y":[34,55,52,50,44,44,35],"text":["reorder(holiday, -total): Labor Day Weekend (3 days)<br />person_injured:  34<br />borough: bronx_total_injured","reorder(holiday, -total): Thanksgiving Weekend (4 days)<br />person_injured:  55<br />borough: bronx_total_injured","reorder(holiday, -total): Memorial Day Weekend (3 days)<br />person_injured:  52<br />borough: bronx_total_injured","reorder(holiday, -total): Martin Luther King Day Weekend (3 days)<br />person_injured:  50<br />borough: bronx_total_injured","reorder(holiday, -total): Christmas Day Weekend (3 days)<br />person_injured:  44<br />borough: bronx_total_injured","reorder(holiday, -total): Independence Day Weekend (3 days)<br />person_injured:  44<br />borough: bronx_total_injured","reorder(holiday, -total): Presidents Day Weekend (3 days)<br />person_injured:  35<br />borough: bronx_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"bronx_total_injured","legendgroup":"bronx_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[127,158,140,137,102,120,124],"x":[1,2,3,4,5,6,7],"y":[149,91,108,100,124,92,74],"text":["reorder(holiday, -total): Labor Day Weekend (3 days)<br />person_injured: 149<br />borough: brooklyn_total_injured","reorder(holiday, -total): Thanksgiving Weekend (4 days)<br />person_injured:  91<br />borough: brooklyn_total_injured","reorder(holiday, -total): Memorial Day Weekend (3 days)<br />person_injured: 108<br />borough: brooklyn_total_injured","reorder(holiday, -total): Martin Luther King Day Weekend (3 days)<br />person_injured: 100<br />borough: brooklyn_total_injured","reorder(holiday, -total): Christmas Day Weekend (3 days)<br />person_injured: 124<br />borough: brooklyn_total_injured","reorder(holiday, -total): Independence Day Weekend (3 days)<br />person_injured:  92<br />borough: brooklyn_total_injured","reorder(holiday, -total): Presidents Day Weekend (3 days)<br />person_injured:  74<br />borough: brooklyn_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(59,82,139,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"brooklyn_total_injured","legendgroup":"brooklyn_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[104,114,101,83,74,79,88],"x":[1,2,3,4,5,6,7],"y":[23,44,39,54,28,41,36],"text":["reorder(holiday, -total): Labor Day Weekend (3 days)<br />person_injured:  23<br />borough: manhattan_total_injured","reorder(holiday, -total): Thanksgiving Weekend (4 days)<br />person_injured:  44<br />borough: manhattan_total_injured","reorder(holiday, -total): Memorial Day Weekend (3 days)<br />person_injured:  39<br />borough: manhattan_total_injured","reorder(holiday, -total): Martin Luther King Day Weekend (3 days)<br />person_injured:  54<br />borough: manhattan_total_injured","reorder(holiday, -total): Christmas Day Weekend (3 days)<br />person_injured:  28<br />borough: manhattan_total_injured","reorder(holiday, -total): Independence Day Weekend (3 days)<br />person_injured:  41<br />borough: manhattan_total_injured","reorder(holiday, -total): Presidents Day Weekend (3 days)<br />person_injured:  36<br />borough: manhattan_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"manhattan_total_injured","legendgroup":"manhattan_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[10,4,10,11,9,7,5],"x":[1,2,3,4,5,6,7],"y":[94,110,91,72,65,72,83],"text":["reorder(holiday, -total): Labor Day Weekend (3 days)<br />person_injured:  94<br />borough: queens_total_injured","reorder(holiday, -total): Thanksgiving Weekend (4 days)<br />person_injured: 110<br />borough: queens_total_injured","reorder(holiday, -total): Memorial Day Weekend (3 days)<br />person_injured:  91<br />borough: queens_total_injured","reorder(holiday, -total): Martin Luther King Day Weekend (3 days)<br />person_injured:  72<br />borough: queens_total_injured","reorder(holiday, -total): Christmas Day Weekend (3 days)<br />person_injured:  65<br />borough: queens_total_injured","reorder(holiday, -total): Independence Day Weekend (3 days)<br />person_injured:  72<br />borough: queens_total_injured","reorder(holiday, -total): Presidents Day Weekend (3 days)<br />person_injured:  83<br />borough: queens_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(93,200,99,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"queens_total_injured","legendgroup":"queens_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7],"y":[10,4,10,11,9,7,5],"text":["reorder(holiday, -total): Labor Day Weekend (3 days)<br />person_injured:  10<br />borough: staten_island_total_injured","reorder(holiday, -total): Thanksgiving Weekend (4 days)<br />person_injured:   4<br />borough: staten_island_total_injured","reorder(holiday, -total): Memorial Day Weekend (3 days)<br />person_injured:  10<br />borough: staten_island_total_injured","reorder(holiday, -total): Martin Luther King Day Weekend (3 days)<br />person_injured:  11<br />borough: staten_island_total_injured","reorder(holiday, -total): Christmas Day Weekend (3 days)<br />person_injured:   9<br />borough: staten_island_total_injured","reorder(holiday, -total): Independence Day Weekend (3 days)<br />person_injured:   7<br />borough: staten_island_total_injured","reorder(holiday, -total): Presidents Day Weekend (3 days)<br />person_injured:   5<br />borough: staten_island_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"staten_island_total_injured","legendgroup":"staten_island_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.2754946727549,"r":7.30593607305936,"b":147.908068712143,"l":43.1050228310502},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"<b> Persons Injured by Car Crashs on <br /> Federal Holidays Weekends (2018) <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,7.6],"tickmode":"array","ticktext":["Labor Day Weekend (3 days)","Thanksgiving Weekend (4 days)","Memorial Day Weekend (3 days)","Martin Luther King Day Weekend (3 days)","Christmas Day Weekend (3 days)","Independence Day Weekend (3 days)","Presidents Day Weekend (3 days)"],"tickvals":[1,2,3,4,5,6,7],"categoryorder":"array","categoryarray":["Labor Day Weekend (3 days)","Thanksgiving Weekend (4 days)","Memorial Day Weekend (3 days)","Martin Luther King Day Weekend (3 days)","Christmas Day Weekend (3 days)","Independence Day Weekend (3 days)","Presidents Day Weekend (3 days)"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Holiday Weekends","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-15.5,325.5],"tickmode":"array","ticktext":["0","100","200","300"],"tickvals":[0,100,200,300],"categoryorder":"array","categoryarray":["0","100","200","300"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Number Persons Injured","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.927821522309711},"annotations":[{"text":"Borough","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"30a73f05522c":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"30a73f05522c","visdat":{"30a73f05522c":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_day = ggplotly(plot_day)
+plot_day</code></pre>
+<div id="htmlwidget-50a40a9e9888b43ddf69" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-50a40a9e9888b43ddf69">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[108,79,77,73,54,60,39],"x":[1,2,3,4,5,6,7],"y":[3,27,16,5,18,10,13],"text":["reorder(holiday, -total): Labor Day<br />person_injured:  3<br />borough: bronx_total_injured","reorder(holiday, -total): Martin Luther King, Jr. Day<br />person_injured: 27<br />borough: bronx_total_injured","reorder(holiday, -total): Memorial Day<br />person_injured: 16<br />borough: bronx_total_injured","reorder(holiday, -total): Presidents Day<br />person_injured:  5<br />borough: bronx_total_injured","reorder(holiday, -total): Independence Day<br />person_injured: 18<br />borough: bronx_total_injured","reorder(holiday, -total): Christmas Day<br />person_injured: 10<br />borough: bronx_total_injured","reorder(holiday, -total): Thanksgiving Day<br />person_injured: 13<br />borough: bronx_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"bronx_total_injured","legendgroup":"bronx_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[48,37,39,41,22,35,22],"x":[1,2,3,4,5,6,7],"y":[60,42,38,32,32,25,17],"text":["reorder(holiday, -total): Labor Day<br />person_injured: 60<br />borough: brooklyn_total_injured","reorder(holiday, -total): Martin Luther King, Jr. Day<br />person_injured: 42<br />borough: brooklyn_total_injured","reorder(holiday, -total): Memorial Day<br />person_injured: 38<br />borough: brooklyn_total_injured","reorder(holiday, -total): Presidents Day<br />person_injured: 32<br />borough: brooklyn_total_injured","reorder(holiday, -total): Independence Day<br />person_injured: 32<br />borough: brooklyn_total_injured","reorder(holiday, -total): Christmas Day<br />person_injured: 25<br />borough: brooklyn_total_injured","reorder(holiday, -total): Thanksgiving Day<br />person_injured: 17<br />borough: brooklyn_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(59,82,139,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"brooklyn_total_injured","legendgroup":"brooklyn_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[35,23,27,33,19,30,17],"x":[1,2,3,4,5,6,7],"y":[13,14,12,8,3,5,5],"text":["reorder(holiday, -total): Labor Day<br />person_injured: 13<br />borough: manhattan_total_injured","reorder(holiday, -total): Martin Luther King, Jr. Day<br />person_injured: 14<br />borough: manhattan_total_injured","reorder(holiday, -total): Memorial Day<br />person_injured: 12<br />borough: manhattan_total_injured","reorder(holiday, -total): Presidents Day<br />person_injured:  8<br />borough: manhattan_total_injured","reorder(holiday, -total): Independence Day<br />person_injured:  3<br />borough: manhattan_total_injured","reorder(holiday, -total): Christmas Day<br />person_injured:  5<br />borough: manhattan_total_injured","reorder(holiday, -total): Thanksgiving Day<br />person_injured:  5<br />borough: manhattan_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"manhattan_total_injured","legendgroup":"manhattan_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[3,4,3,1,1,6,0],"x":[1,2,3,4,5,6,7],"y":[32,19,24,32,18,24,17],"text":["reorder(holiday, -total): Labor Day<br />person_injured: 32<br />borough: queens_total_injured","reorder(holiday, -total): Martin Luther King, Jr. Day<br />person_injured: 19<br />borough: queens_total_injured","reorder(holiday, -total): Memorial Day<br />person_injured: 24<br />borough: queens_total_injured","reorder(holiday, -total): Presidents Day<br />person_injured: 32<br />borough: queens_total_injured","reorder(holiday, -total): Independence Day<br />person_injured: 18<br />borough: queens_total_injured","reorder(holiday, -total): Christmas Day<br />person_injured: 24<br />borough: queens_total_injured","reorder(holiday, -total): Thanksgiving Day<br />person_injured: 17<br />borough: queens_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(93,200,99,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"queens_total_injured","legendgroup":"queens_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7],"y":[3,4,3,1,1,6,0],"text":["reorder(holiday, -total): Labor Day<br />person_injured:  3<br />borough: staten_island_total_injured","reorder(holiday, -total): Martin Luther King, Jr. Day<br />person_injured:  4<br />borough: staten_island_total_injured","reorder(holiday, -total): Memorial Day<br />person_injured:  3<br />borough: staten_island_total_injured","reorder(holiday, -total): Presidents Day<br />person_injured:  1<br />borough: staten_island_total_injured","reorder(holiday, -total): Independence Day<br />person_injured:  1<br />borough: staten_island_total_injured","reorder(holiday, -total): Christmas Day<br />person_injured:  6<br />borough: staten_island_total_injured","reorder(holiday, -total): Thanksgiving Day<br />person_injured:  0<br />borough: staten_island_total_injured"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"staten_island_total_injured","legendgroup":"staten_island_total_injured","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.2754946727549,"r":7.30593607305936,"b":111.133339893221,"l":37.2602739726027},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"<b> Persons Injured by Car Crashs <br /> on Federal Holidays (2018) <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,7.6],"tickmode":"array","ticktext":["Labor Day","Martin Luther King, Jr. Day","Memorial Day","Presidents Day","Independence Day","Christmas Day","Thanksgiving Day"],"tickvals":[1,2,3,4,5,6,7],"categoryorder":"array","categoryarray":["Labor Day","Martin Luther King, Jr. Day","Memorial Day","Presidents Day","Independence Day","Christmas Day","Thanksgiving Day"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Holiday","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5.55,116.55],"tickmode":"array","ticktext":["0","30","60","90"],"tickvals":[0,30,60,90],"categoryorder":"array","categoryarray":["0","30","60","90"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Number Persons Injured","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.927821522309711},"annotations":[{"text":"Borough","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"30a7ef63451":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"30a7ef63451","visdat":{"30a7ef63451":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <div id="comments" class="section level3">
 <h3>Comments:</h3>
-</div>
-<div id="most-persons-injured-happens-on-the-day-of-labor-day-and-labor-day-weekend-while-least-persons-injured-in-on-thanksgiving-day.-however-thanksgiving-weekend-is-the-second-most-holiday-weekends-when-most-persons-are-injured.-it-could-be-explained-by-that-people-tend-to-stay-home-on-the-day-of-thanksgiving-while-most-people-might-be-out-shopping-on-thanksgiving-weekend-which-increases-the-number-of-persons-injured." class="section level3">
-<h3>Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured.</h3>
-</div>
-<div id="so-try-to-avoid-going-out-on-labor-day-weekend-and-thanksgiving-week-and-be-careful-if-you-have-to." class="section level3">
-<h3>So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to.</h3>
+<p>Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured.</p>
+<p>So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to.</p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -470,7 +500,38 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
