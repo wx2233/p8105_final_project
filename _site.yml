@@ -6,13 +6,23 @@ navbar:
     - text: "About"
       href: about.html
     - text: "Overview"
-      href: intro_page.html
+      menu:
+      - text: "Map"
+        href: map.html
+      - text: "Accident Overview"
+        href: year.html
     - text: "Collision by Borough"
       href: https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/
-    - text: "Collision by Time"
-      href: zanis_regression.html
+    - text: "Related Work"
+      menu:
+      - text: "Weather"
+        href: weather.html
+      - text: "Restaurant"
+        href: restaurant.html
+      - text: "Holiday"
+        href: holiday.html
     - text: "Regression Analysis"
-      href: gun_control2.html
+      href: Regression.html
     - text: "Conclusions"
       href: conclusions.html
     - icon: fa-envelope fa-lg
