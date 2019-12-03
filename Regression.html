@@ -435,6 +435,18 @@ climate_df %&gt;%
 <div id="light-data" class="section level2">
 <h2>Light data</h2>
 <pre class="r"><code>light_data = 
+  read_csv(&quot;./large_data/night_accident.csv&quot;) %&gt;% 
+  select(-X1)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   X1 = col_double(),
+##   day = col_double(),
+##   month = col_double(),
+##   borough = col_character(),
+##   num_accident = col_double(),
+##   num_light = col_double()
+## )</code></pre>
+<pre class="r"><code>signal_data = 
   read_csv(&quot;./large_data/whole_accident.csv&quot;) %&gt;% 
   select(-X1)</code></pre>
 <pre><code>## Parsed with column specification:
@@ -446,6 +458,8 @@ climate_df %&gt;%
 ##   num_accident = col_double(),
 ##   num_signal = col_double()
 ## )</code></pre>
+<pre class="r"><code>light_data = 
+  cbind(light_data,num_signal = pull(signal_data,num_signal))</code></pre>
 </div>
 <div id="vehicle-data" class="section level2">
 <h2>Vehicle data</h2>
@@ -548,7 +562,7 @@ boro_daytime_weather_light_vt = left_join(boro_daytime_weather_light, vehicle_da
   ungroup() %&gt;% 
   select(-date_complete) %&gt;% 
   select(collisionnumber,borough,everything())</code></pre>
-<pre class="r"><code>fit2 = lm(collisionnumber ~ borough + factor(daytime)*num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+<pre class="r"><code>fit2 = lm(collisionnumber ~ borough + factor(daytime) + num_light + num_signal  + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
 
 summary(fit2) %&gt;% 
   broom::tidy() %&gt;% 
@@ -566,107 +580,107 @@ summary(fit2) %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">20.9843539</td>
-<td align="right">2.9436114</td>
-<td align="right">7.1287785</td>
-<td align="right">0.0000000</td>
+<td align="right">15.4482395</td>
+<td align="right">3.4020295</td>
+<td align="right">4.5408893</td>
+<td align="right">0.0000058</td>
 </tr>
 <tr class="even">
 <td align="left">boroughBROOKLYN</td>
-<td align="right">32.0670618</td>
-<td align="right">0.9308051</td>
-<td align="right">34.4508887</td>
+<td align="right">31.8180032</td>
+<td align="right">1.1502285</td>
+<td align="right">27.6623334</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughMANHATTAN</td>
-<td align="right">8.5160345</td>
-<td align="right">1.0212699</td>
-<td align="right">8.3386718</td>
+<td align="right">9.2800277</td>
+<td align="right">1.0160053</td>
+<td align="right">9.1338379</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">boroughQUEENS</td>
-<td align="right">24.1236608</td>
-<td align="right">0.8429766</td>
-<td align="right">28.6172373</td>
+<td align="right">21.9201360</td>
+<td align="right">1.9504287</td>
+<td align="right">11.2386244</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughSTATEN ISLAND</td>
-<td align="right">-21.8717485</td>
-<td align="right">0.7834045</td>
-<td align="right">-27.9188436</td>
+<td align="right">-21.8225745</td>
+<td align="right">0.9402364</td>
+<td align="right">-23.2096671</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">factor(daytime)1</td>
-<td align="right">26.4143686</td>
-<td align="right">0.7676066</td>
-<td align="right">34.4113365</td>
+<td align="right">42.9750883</td>
+<td align="right">0.5242656</td>
+<td align="right">81.9719809</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
+<td align="left">num_light</td>
+<td align="right">0.0053245</td>
+<td align="right">0.0030628</td>
+<td align="right">1.7384195</td>
+<td align="right">0.0822220</td>
+</tr>
+<tr class="even">
 <td align="left">num_signal</td>
-<td align="right">-0.0234120</td>
-<td align="right">0.0020170</td>
-<td align="right">-11.6071313</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0004146</td>
+<td align="right">0.0011211</td>
+<td align="right">0.3698292</td>
+<td align="right">0.7115314</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">factor(prep)1</td>
-<td align="right">1.1522721</td>
-<td align="right">0.5072893</td>
-<td align="right">2.2714298</td>
-<td align="right">0.0231795</td>
+<td align="right">1.1520531</td>
+<td align="right">0.5578519</td>
+<td align="right">2.0651594</td>
+<td align="right">0.0389790</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">vehiclepassenger vehicle</td>
-<td align="right">-7.0131210</td>
-<td align="right">2.9122619</td>
-<td align="right">-2.4081354</td>
-<td align="right">0.0160840</td>
+<td align="right">-11.6503456</td>
+<td align="right">3.2052379</td>
+<td align="right">-3.6347834</td>
+<td align="right">0.0002821</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">vehiclesedan</td>
-<td align="right">-3.1951372</td>
-<td align="right">2.8997003</td>
-<td align="right">-1.1018853</td>
-<td align="right">0.2705848</td>
+<td align="right">-7.3641146</td>
+<td align="right">3.1839351</td>
+<td align="right">-2.3128972</td>
+<td align="right">0.0207841</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">vehiclesport utility vehicle</td>
-<td align="right">-3.4489274</td>
-<td align="right">2.9294879</td>
-<td align="right">-1.1773141</td>
-<td align="right">0.2391476</td>
+<td align="right">-7.4913107</td>
+<td align="right">3.2174571</td>
+<td align="right">-2.3283327</td>
+<td align="right">0.0199493</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">vehicletaxi</td>
-<td align="right">4.8533443</td>
-<td align="right">3.6786163</td>
-<td align="right">1.3193396</td>
-<td align="right">0.1871391</td>
-</tr>
-<tr class="odd">
-<td align="left">vehicletruck</td>
-<td align="right">-0.1892060</td>
-<td align="right">6.9711662</td>
-<td align="right">-0.0271412</td>
-<td align="right">0.9783486</td>
+<td align="right">-5.6507030</td>
+<td align="right">4.0233894</td>
+<td align="right">-1.4044634</td>
+<td align="right">0.1602668</td>
 </tr>
 <tr class="even">
-<td align="left">holiday1</td>
-<td align="right">-8.4159468</td>
-<td align="right">0.9936143</td>
-<td align="right">-8.4700342</td>
-<td align="right">0.0000000</td>
+<td align="left">vehicletruck</td>
+<td align="right">-1.9681685</td>
+<td align="right">7.6653485</td>
+<td align="right">-0.2567618</td>
+<td align="right">0.7973773</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(daytime)1:num_signal</td>
-<td align="right">0.0541657</td>
-<td align="right">0.0019682</td>
-<td align="right">27.5199058</td>
+<td align="left">holiday1</td>
+<td align="right">-8.2159129</td>
+<td align="right">1.0962308</td>
+<td align="right">-7.4946929</td>
 <td align="right">0.0000000</td>
 </tr>
 </tbody>
@@ -676,7 +690,7 @@ plot(fit2)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
 <pre class="r"><code>cor(
   cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
-        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
+        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
   ) %&gt;% 
   corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 45, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-12-1.png" width="100%" /></p>

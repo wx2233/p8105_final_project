@@ -104,8 +104,15 @@ climate_df %>%
 ## Light data
 ```{r}
 light_data = 
+  read_csv("./large_data/night_accident.csv") %>% 
+  select(-X1)
+
+signal_data = 
   read_csv("./large_data/whole_accident.csv") %>% 
   select(-X1)
+
+light_data = 
+  cbind(light_data,num_signal = pull(signal_data,num_signal))
 ```
 
 ## Vehicle data
@@ -228,7 +235,7 @@ boro_daytime_weather_light_vt_hol =
 
 
 ```{r}
-fit2 = lm(collisionnumber ~ borough + factor(daytime)*num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+fit2 = lm(collisionnumber ~ borough + factor(daytime) + num_light + num_signal  + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
 
 summary(fit2) %>% 
   broom::tidy() %>% 
@@ -242,7 +249,7 @@ plot(fit2)
 ```{r}
 cor(
   cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
-        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
+        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
   ) %>% 
   corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
