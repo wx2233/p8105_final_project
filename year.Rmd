@@ -4,6 +4,7 @@ author: "Guangling Xu"
 date: "2019/12/2"
 output: html_document
 ---
+
 ```{r,include=FALSE}
 library(tidyverse)
 library(plotly)
@@ -93,7 +94,7 @@ data_day= rename(data_day,
 
 data_day  = data_day %>% 
   pivot_longer(
-    `accident number`:`people killed`,
+    `accident number`:`people killed number`,
     names_to   = "type",
     values_to = "number"
   )

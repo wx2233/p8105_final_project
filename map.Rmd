@@ -9,7 +9,7 @@ library(tidyverse)
 library(leaflet)
 
 data_2018 = 
-  read_csv("./large_data/2018data.csv") %>% 
+  read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
 newnames = colnames(data_2018) %>% 
   str_replace("number_of_","") 
@@ -26,7 +26,8 @@ data_2018 %>%
     date_paste = as.Date(paste("2018",month,day,sep = "-"))
   ) %>% 
   select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
-  rename("vehicle_type" = "vehicle_type_code_1") %>% 
+  rename("vehicle_type" = "vehicle_type_code_1",
+         "cause" = "contributing_factor_vehicle_1") %>% 
   mutate( day = as.numeric(day),
           month = as.numeric(month),
           hour = as.numeric(hour),
@@ -34,26 +35,22 @@ data_2018 %>%
           latitude = replace_na(latitude,0),
           vehicle_type = str_to_lower(vehicle_type)
   ) %>%
-  filter( latitude != 0)
-  
+  filter( latitude != 0) %>% 
+  drop_na(borough)
 ```
 
 
 ```{r}
 data_2018 = tidy_data
-
-data_2018 = rename(data_2018, long = latitude, lat = longitude)
-
+map_data = rename(data_2018, long = latitude, lat = longitude) 
 pal <- colorNumeric(
-  palette = "viridis",
-  domain = data_2018$persons_injured)
-
-data_2018 %>% 
+  palette = "Accent",
+  domain = map_data$persons_injured)
+map_data %>% 
+  filter(persons_injured > 0) %>% 
   filter(!(lat < "-70" | lat >= "-75")) %>% 
-  filter(persons_injured > 2) %>% 
-    mutate(
-    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>% 
-  sample_n(2000) %>% 
+  mutate(
+    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>%
   leaflet() %>% 
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
