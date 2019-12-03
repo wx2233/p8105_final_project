@@ -1,0 +1,134 @@
+---
+title: "weather"
+author: "Guangling Xu"
+date: "2019/12/2"
+output: html_document
+---
+### Number of Accident by weather
+
+```{r, include=FALSE}
+climate_df = 
+  read_csv("./large_data/climate.csv") %>% 
+  janitor::clean_names() %>% 
+  select(date,hourly_dry_bulb_temperature,hourly_precipitation,daily_weather) %>%
+  separate(date, into = c("date", "time"), sep = " ") %>% 
+  mutate(
+    date = as.Date(date)
+  )
+```
+
+
+```{r,include=FALSE}
+all_day_weather_df =
+  climate_df %>% filter(time == "23:59:00") %>% 
+  distinct(date,daily_weather) %>% 
+  filter(!duplicated(date)) %>% 
+  separate(daily_weather, into = c("weathertype", "other"), sep = 2) %>%
+  mutate(
+    weathertype = recode(weathertype,
+                      "SN" = "snow",
+                      "HZ" = "haze",
+                      "RA" = "rain",
+                      "FG" = "fog",
+                      "BR" = "mist"
+                      ),
+    weathertype = replace_na(weathertype,"sunny")) %>% 
+  select(-other)
+
+collision_all = 
+tidy_data %>% 
+  group_by(date_complete) %>% 
+  summarise(
+    collision_event = n(),
+    injured_event = sum(persons_injured != 0, na.rm = TRUE),
+    killed_event = sum(persons_killed != 0, na.rm = TRUE)
+  )
+
+collision_weather = 
+bind_cols(all_day_weather_df,collision_all) %>% 
+  select(-date_complete)
+```
+
+
+```{r, echo = FALSE}
+weather_type_plot =  
+collision_weather %>% 
+  group_by(weathertype) %>% 
+  summarise(
+    count = mean(collision_event)
+  ) %>% 
+  mutate(
+    weathertype = fct_reorder(weathertype,count)
+  ) %>% 
+  ggplot(aes(x = weathertype, y = count,
+             fill = weathertype)) + 
+  geom_bar(stat = "identity", width = 0.6) +
+  coord_flip()+
+  labs(
+    title = " Number of Accident by weather",
+    y = "Number of Accident",
+    x = "Weather Type"
+    )
+  
+ggplotly(weather_type_plot)
+```
+
+
+### Number of Accident by Degree of Precipitaion over a day
+
+```{r}
+daily_weather_df = 
+climate_df %>% 
+  separate(time, into = c("hour", "minute","second"), sep = ":") %>% 
+  separate(date, into = c("year","month", "day"), sep = "-") %>% 
+  separate(hourly_precipitation, into = c("prep","other"), sep = 4) %>% 
+  select(-minute,-second,-year,-daily_weather,-other) %>% 
+  mutate(
+    month = as.numeric(month),
+    day = as.numeric(day),
+    hour = as.numeric(hour),
+    prep = replace_na(as.numeric(prep),0)
+  )
+
+daily_weather_final = daily_weather_df[rep(seq_len(nrow(daily_weather_df)), each = 3), ]
+
+daily_collision_data = 
+tidy_data %>% 
+  select(month,day,hour,persons_injured,persons_killed) %>% 
+  group_by(month,day,hour) %>% 
+  summarise(
+    accident = n(),
+    injured = sum(persons_injured,na.rm = TRUE),
+    killed = sum(persons_killed,na.rm = TRUE)
+  ) %>% 
+  pivot_longer(
+    accident:killed,
+    names_to = "type",
+    values_to = "number"
+  )
+
+daily_weather_collision = 
+  left_join(daily_collision_data, daily_weather_df,
+            by = c("month","day","hour")) %>% 
+  mutate(
+    prep_degree = 
+      if_else(prep %in% 0:0.10,"light",
+              if_else( prep < 0.3 & prep > 0.11 , "moderate","heavy")),
+  prep_degree = factor(prep_degree, levels =  c("heavy","moderate","light")))
+
+daily_weather_plot =
+daily_weather_collision %>% 
+  ggplot(aes(hour, y = number, color = type)) +
+  geom_point(alpha = 0.5) + 
+  facet_grid(~prep_degree) +
+  labs(
+    color = "type",
+    title = " Number by weather",
+    y = "Number",
+    x = "Hour"
+    )
+
+ggplotly(daily_weather_plot)
+```
+
+

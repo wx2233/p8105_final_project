@@ -1,0 +1,70 @@
+---
+title: "map"
+author: "Guangling Xu"
+date: "2019/12/2"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(leaflet)
+
+data_2018 = 
+  read_csv("./large_data/2018data.csv") %>% 
+  janitor::clean_names() 
+newnames = colnames(data_2018) %>% 
+  str_replace("number_of_","") 
+names(data_2018) = newnames
+
+tidy_data = 
+data_2018 %>% 
+  mutate(
+    date_complete = date 
+  ) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  separate(time, into = c("hour", "minute"), sep = ":") %>%
+  mutate(
+    date_paste = as.Date(paste("2018",month,day,sep = "-"))
+  ) %>% 
+  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
+  rename("vehicle_type" = "vehicle_type_code_1") %>% 
+  mutate( day = as.numeric(day),
+          month = as.numeric(month),
+          hour = as.numeric(hour),
+          minute = as.numeric(minute),
+          latitude = replace_na(latitude,0),
+          vehicle_type = str_to_lower(vehicle_type)
+  ) %>%
+  filter( latitude != 0)
+  
+```
+
+
+```{r}
+data_2018 = tidy_data
+
+data_2018 = rename(data_2018, long = latitude, lat = longitude)
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = data_2018$persons_injured)
+
+data_2018 %>% 
+  filter(!(lat < "-70" | lat >= "-75")) %>% 
+  filter(persons_injured > 2) %>% 
+    mutate(
+    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>% 
+  sample_n(2000) %>% 
+  leaflet() %>% 
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = pal, values = ~persons_injured,
+    title = "Persons Injured",
+    opacity = 1
+  ) %>% 
+  addCircleMarkers(
+    ~lat, ~long,
+    color = ~pal(persons_injured),
+    radius = 0.5,
+    popup = ~ label) 
+```
+
