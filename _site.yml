@@ -8,7 +8,7 @@ navbar:
     - text: "Overview"
       href: intro_page.html
     - text: "Collision by Borough"
-      href: https://zanis-shiny.shinyapps.io/zanis_shiny/
+      href: https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/
     - text: "Collision by Time"
       href: zanis_regression.html
     - text: "Regression Analysis"
