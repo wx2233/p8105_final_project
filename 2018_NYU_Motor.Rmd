@@ -172,7 +172,7 @@ map_data %>%
   filter(persons_injured > 0) %>% 
   filter(!(lat < "-70" | lat >= "-75")) %>% 
   mutate(
-    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Month: ", month , sep = "") ) %>%
+    label = str_c("<b>vehicle type: ", vehicle_type, "</b><br>Persons Injured: ", persons_injured , sep = "") ) %>%
   leaflet() %>% 
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
