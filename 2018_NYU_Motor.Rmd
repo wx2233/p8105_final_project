@@ -260,7 +260,8 @@ plot_kill_injured_day
 ### proportion of accident and injured people by borough, by hour
 
 ```{r}
-boro_plot = tidy_data %>% 
+boro_events = 
+  tidy_data %>% 
   drop_na(borough, persons_injured, persons_killed) %>%
   group_by(borough) %>%
   summarize(accident = n(),
@@ -269,42 +270,64 @@ boro_plot = tidy_data %>%
   mutate(prop_accident = round(accident/sum(accident),4),
          prop_injured = round(injured/sum(injured),4),
          prop_killed = round(killed/sum(killed),4)) %>%
-  mutate(text_label1 = str_c("accident: ", accident), 
-         text_label2 = str_c("injured: ", injured),
-         text_label3 = str_c("killed: ", killed)) %>% 
-  plot_ly(x = ~borough, y = ~prop_accident, type = 'bar', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
-  add_trace(x = ~borough, y = ~prop_injured, type = 'bar', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
-  add_trace(x = ~borough, y = ~prop_killed, type = 'bar', name = 'injury', text = ~text_label3, alpha = 0.8) %>%
-  layout(title="proportion of accident and injured people by borough", xaxis = list(title = 'borough'), barmode = 'group', legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
-boro_plot
+  pivot_longer(
+    prop_accident:prop_killed,
+    values_to = "proportion",
+    names_prefix = "prop_",
+    names_to = "events",
+  ) 
+
+boro_events_plot = 
+  boro_events %>% 
+  ggplot(aes(x = borough, y = proportion, fill = events)) +
+  geom_bar(stat = "identity",position = "dodge") +
+  labs(title ="proportion of accident and injured people by borough", 
+       x = 'Borough',
+       y = 'Proportion'
+  )
+
+ggplotly(boro_events_plot)
 
 ```
 Number of accident and injured people in Brooklyn is greatest comparing with other boroughs. Queen is second. Staten Island have fewest accident and injured people. Manhattan and Bronx is in the middle.
 
 ```{r}
-hour_table = tidy_data %>% 
+hour_events = 
+  tidy_data %>% 
   drop_na(hour, persons_injured, persons_killed) %>%
   group_by(hour) %>%
   summarize(accident = n(),
             injured = sum(persons_injured),
-            killed = sum(persons_killed)) 
-hour_plot = hour_table %>%
+            killed = sum(persons_killed)) %>%
   mutate(prop_accident = round(accident/sum(accident),4),
          prop_injured = round(injured/sum(injured),4),
          prop_killed = round(killed/sum(killed),4)) %>%
-  mutate(text_label1 = str_c("accident: ", accident), 
-         text_label2 = str_c("injured: ", injured),
-         text_label3 = str_c("killed: ", killed)) %>% 
-  plot_ly(x = ~hour, y = ~prop_accident, type = 'scatter', mode = 'lines', name = 'accident', text = ~text_label1, alpha = 0.8) %>%
-  add_trace(x = ~hour, y = ~prop_killed, type = 'scatter', mode = 'lines', name = 'killed', text = ~text_label3, alpha = 0.8) %>%
-  add_trace(x = ~hour, y = ~prop_injured, type = 'scatter', mode = 'lines', name = 'injury', text = ~text_label2, alpha = 0.8) %>%
-layout(title="proportion of accident and injured people by hour", xaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 1, title = 'Hour'), yaxis = list(autotick = FALSE, ticks = "outside", tick0 = 0, dtick = 0.01, title = 'proportion'), legend = list(orientation = "h", xanchor = "center", x = 0.5, y = -0.2)) 
+  pivot_longer(
+    prop_accident:prop_killed,
+    values_to = "proportion",
+    names_prefix = "prop_",
+    names_to = "events",
+  ) 
 
-hour_plot %>%
-  layout(shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+hour_events_plot =
+hour_events %>% 
+  ggplot(aes(x = hour, y = proportion, color = events)) +
+  geom_line() +
+  annotate("rect", xmin = 8, xmax = 20, ymin = 0, ymax = Inf, fill = "blue", alpha = .1) +
+  labs(
+    title = "proportion of accident and injured people by hour", 
+    x =  'Hour',
+    y = 'Proportion')
+
+hour_events_plot = ggplotly(hour_events_plot)
+hour_events_plot[['x']][['layout']][['shapes']] <- c()
+
+hour_events_plot = layout(hour_events_plot, shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+
+hour_events_plot
 
 ```
-Frequency of accident and injured people in the period of 8 am-19 pm is higher than other period of time. Started from 3 am, number of accident and injured people increase and reach a small peak at 8am. At 5pm, it reaches a big peak. then it started to decrease.
+Frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. Started from 3 am, number of accident and injured people increase and reach a small peak at 8am. At 5pm, it reaches a big peak. then it started to decrease.
 
 ## Holiday Analysis
 ```{r}
@@ -567,30 +590,40 @@ climate_df %>%
     prep = replace_na(as.numeric(prep),0)
   )
 
+daily_weather_final = daily_weather_df[rep(seq_len(nrow(daily_weather_df)), each = 3), ]
+
 daily_collision_data = 
 tidy_data %>% 
   select(month,day,hour,persons_injured,persons_killed) %>% 
   group_by(month,day,hour) %>% 
   summarise(
-    eventsnumber = n()
+    accident = n(),
+    injured = sum(persons_injured,na.rm = TRUE),
+    killed = sum(persons_killed,na.rm = TRUE)
+  ) %>% 
+  pivot_longer(
+    accident:killed,
+    names_to = "events",
+    values_to = "number"
   )
 
 daily_weather_collision = 
-  left_join(daily_weather_df,daily_collision_data,
+  left_join(daily_collision_data, daily_weather_df,
             by = c("month","day","hour")) %>% 
   mutate(
     prep_degree = 
       if_else(prep %in% 0:0.10,"light",
               if_else( prep < 0.3 & prep > 0.11 , "moderate","heavy")),
-    prep_degree = fct_relevel(prep_degree, c("heavy","moderate","light"))
-  )
+  prep_degree = factor(prep_degree, levels =  c("heavy","moderate","light")))
 
 daily_weather_plot =
 daily_weather_collision %>% 
-  ggplot(aes(hour, eventsnumber, color = prep_degree)) +
-  geom_point(alpha = 0.5) +
-  facet_grid(~ prep_degree) +
-  scale_colour_manual(name = "grp",values = brewer.pal(5,"Set2"))
+  ggplot(aes(hour, y = number, color = events)) +
+  geom_point(alpha = 0.5) + 
+  facet_grid(~prep_degree) +
+  labs(
+    color = "events"
+  )
 
 ggplotly(daily_weather_plot)
 ```

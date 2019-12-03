@@ -29,7 +29,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ```{r}
 data_2018 = 
-  read_csv("./large_data/2018data.csv") %>% 
+  read_csv("./data/2018data.csv") %>% 
   janitor::clean_names() 
 newnames = colnames(data_2018) %>% 
   str_replace("number_of_","") 
@@ -51,7 +51,8 @@ data_2018 %>%
           latitude = replace_na(latitude,0),
           vehicle_type = str_to_lower(vehicle_type)
   ) %>%
-  filter( latitude != 0)
+  filter( latitude != 0) %>% 
+  drop_na(borough)
 ```
 
 
@@ -146,6 +147,9 @@ res_acci_count = left_join(acci_count, res_count, by = "zipcode") %>%
   select(borough, everything()) %>% 
   arrange(borough) %>% 
   drop_na()
+
+## save the result
+write.csv(res_acci_count,file = "./large_data/res_acci_count.csv")
 ```
 
 ```{r}
@@ -162,16 +166,6 @@ res_acci_countplot = ggplot(res_acci_count, aes(x = res_count, y = acci_count))+
   )
 
 ggplotly(res_acci_countplot)
-
 ```
 
-
-```{r}
-sum_res = res_acci_count %>% 
-  group_by(borough) %>% 
-  summarise(
-    sum_res = sum(res_count),
-    sum_acci = sum(acci_count)
-  )
-```
 
