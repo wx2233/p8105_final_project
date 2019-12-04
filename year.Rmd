@@ -1,5 +1,5 @@
 ---
-title: "year"
+title: "Accident Overview"
 output: 
   html_document: 
     code_folding: hide
@@ -125,6 +125,7 @@ There is a steady trend over the year of 2018. Except that an outlier for accide
 
 **A video of the winter storm that day can be found at [windstorm](https://www.youtube.com/watch?v=4mLuO9BYPfU) **
 
+<br>
 
 ### Proportion of Accident by Borough
 
