@@ -159,7 +159,7 @@ res_acci_count = left_join(acci_count, res_count, by = "zipcode") %>%
 ## write.csv(res_acci_count,file = "./large_data/res_acci_count.csv")
 ```
 
-## Alcohol Involvement Accident VS Restaurant Number
+### Alcohol Involvement Accident VS Restaurant Number
 ```{r message=FALSE, warning=FALSE}
 res_acci_countplot = ggplot(res_acci_count, aes(x = res_count, y = acci_count)) +
   geom_point(aes(shape = borough,color = location))+
