@@ -175,7 +175,7 @@ res_acci_countplot = ggplot(res_acci_count, aes(x = res_count, y = acci_count)) 
 ggplotly(res_acci_countplot)
 ```
 
-*Comments*: 
+### Comments: 
 
 Overall smooth line indicates an increasing trend of accident number when restaurant number was under 2000. After this split point, the line slightly decreased.This means that the more the restaurant, the more likily an alcohol involvement car accident could happen. However, when trere are lots of restaurant in a certain area, this may not be an factor which influence alcohol involvement. Further, number of accident greatly influenced by location. For example, West Queens in borough Queens had extremly high number of accident. 
 

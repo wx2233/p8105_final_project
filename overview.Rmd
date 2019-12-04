@@ -249,7 +249,7 @@ cause_by_boro =
   select(-count, -total) 
 ```
 
-```{r}
+```{r fig.width = 8, fig.height = 6, out.width = "100%"}
 cause_by_boro_plot =
   cause_by_boro %>% 
   ggplot(aes(x = cause, y = ratio, fill = borough)) +
@@ -261,10 +261,9 @@ cause_by_boro_plot =
            y = NULL) + 
   theme(axis.text.x = element_text(size = 6, angle = 45))
 cause_by_boro_plotly = ggplotly(cause_by_boro_plot)  
-
 cause_by_boro_plotly %>% 
   layout(legend = list(orientation = "h",   # show entries horizontally
-                     x = 0.5, y = -0.2))  
+                     x = 0.2, y = -0.1))  
 ```
 
 *Comments*: 
