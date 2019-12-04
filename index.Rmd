@@ -4,9 +4,9 @@ title: "**Vehicle Collision in New York City**"
 
 ## Exploring Factors Associated with Vehicle Collision in New York City.
 
-### *Weijia Xiong, Fangming Jin, Siying Li, Guangling Xu* 
+**Weijia Xiong(wx2233), Fangming Jin(fj2269), Siying Li(sl4662), Guangling Xu(gx2144)**
 
 <br>
 
 <center>
-<img src="image/car_collision.jpg" style="width:75%">  
+<img src="image/car.jpg" style="width:`150%">  
