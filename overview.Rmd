@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 	warning = FALSE,
 	fig.width = 8, 
   fig.height = 6,
-  out.width = "80%"
+  out.width = "100%"
 )
 options(
   ggplot2.continuous.colour = "viridis",
@@ -113,10 +113,12 @@ plot_day =
    title = "Trend Over the Year",
    x = "Day of the Year",
    y = "Number") +
-  annotate("text", x = as.Date("2018-11-15") , y = 695, label = "2018-11-15")
+  annotate("text", x = as.Date("2018-11-15") , y = 695, label = "2018-11-15") +
+  theme( legend.title = element_blank() )
 
-plot_kill_injured_day = ggplotly(plot_day)
-plot_kill_injured_day
+ggplotly(plot_day) %>% 
+    layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.2, y = -0.2))  
 ```
 
 *Comments*: 
@@ -154,9 +156,12 @@ boro_events_plot =
   labs(title ="Proportion of Accident and Injured People by Borough", 
        x = 'Borough',
        y = 'Proportion'
-  )
+  ) +
+  theme( legend.title = element_blank() )
 
-ggplotly(boro_events_plot)
+ggplotly(boro_events_plot)%>% 
+    layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.3, y = -0.2))  
 
 ```
 
@@ -193,14 +198,20 @@ hour_events %>%
   labs(
     title = "Proportion of Accident and Injured People by Hour", 
     x =  'Hour',
-    y = 'Proportion')
+    y = 'Proportion') +
+  theme( legend.title = element_blank() )
 
-hour_events_plot = ggplotly(hour_events_plot)
-hour_events_plot[['x']][['layout']][['shapes']] <- c()
+hour_events_plotly = ggplotly(hour_events_plot)
+hour_events_plotly[['x']][['layout']][['shapes']] <- c()
 
-hour_events_plot = layout(hour_events_plot, shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+hour_events_plotly %>%  
+  layout( shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"),
+                       opacity = 0.3, 
+                       x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"),
+          legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.3, y = -0.2))
+         
 
-hour_events_plot
 ```
 
 *Comments*: 
@@ -259,11 +270,12 @@ cause_by_boro_plot =
       labs(title = 'Accident Causes by Borough',
            x = NULL,
            y = NULL) + 
-  theme(axis.text.x = element_text(size = 6, angle = 45))
-cause_by_boro_plotly = ggplotly(cause_by_boro_plot)  
-cause_by_boro_plotly %>% 
+  theme(axis.text.x = element_text(size = 6, angle = 45),
+        legend.title = element_blank())
+
+ggplotly(cause_by_boro_plot)  %>% 
   layout(legend = list(orientation = "h",   # show entries horizontally
-                     x = 0.2, y = -0.1))  
+                     x = 0.1, y = -0.1))  
 ```
 
 *Comments*: 
@@ -297,9 +309,12 @@ vehicle_type_data %>%
     title = "Collisions of Day for Different Vehicles",
     x = "Hour of Day",
     y = "Number of Collisions"
-    )
-  
-ggplotly(vehicle_type_plot)
+    ) +
+  theme(legend.title = element_blank())
+
+ggplotly(vehicle_type_plot) %>% 
+    layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.4, y = -0.2))  
 ```
 
 *Comments*: 
