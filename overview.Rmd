@@ -66,6 +66,9 @@ data_2018 %>%
 data_2018_seperate = tidy_data
 ```
 
+<br>
+
+
 ### Accident During the Day
 
 ```{r include=FALSE}
