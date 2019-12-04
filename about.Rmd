@@ -21,12 +21,11 @@ According to [Driver knowledge](https://www.driverknowledge.com/car-accident-sta
 
 Data from five sources were considered for this project. The data sources, scraping methods and cleaning procedures for each dataset are described below. 
 
-*  The Github repository for this project can be found [here](https://github.com/ChristineLong/p8105_Final_Project). 
+*  The Github repository for this project can be found [here](https://github.com/wx2233/p8105_final_project). 
 
-*  The final website can be found [here](https://eshea6.github.io/us_gun_violence.github.io/), and corresponding Github repository for the website is located [here](https://github.com/eshea6/us_gun_violence.github.io).
+*  The final website can be found [here](https://eshea6.github.io/us_gun_violence.github.io/)
 
-*  The final report is housed in a repository [here](https://github.com/devon-m2/p8105_Gun-Violence_Final-Report). 
-
+* The shiny repository can be found [here](https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/)
 <br>
 
 ### **Data**
@@ -34,19 +33,11 @@ Data from five sources were considered for this project. The data sources, scrap
 
 ***DOHMH New York City Restaurant Inspection Results Data*** was obtained from the [NYC Open Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j). The dataset was used to assess the association between the restaurant number and alcohol involved collision number. 
 
-***Gun law scores of states*** is created by the [Giffords Law Center](https://lawcenter.giffords.org/scorecard/#rankings) using "a comprehensive grading rubric that assigns positive point values to gun safety policies, such as private-sale background checks and extreme risk protection orders, and negative point values to dangerous laws, such as permitless concealed carry". 
+Data on ***U.S legal holidays*** was taken from the [Federal Holidays](https://www.redcort.com/us-federal-bank-holidays/).Federal holidays may affect the number of accidents since number of people going outside varies among holidays.  
 
-Data on ***gun license applications*** was taken from the [National Instant Criminal Background Check System (NICS)](https://www.statista.com/statistics/249687/number-of-background-checks-done-by-the-nics-in-the-us-by-state/), which is used by Federal Firearms Licensees (FFLs) to instantly determine whether a prospective buyer is eligible to buy firearms or explosives. This data is used to approximate how many people tried to apply for gun licenses in each state. 
+***Traffic Signals Data*** is uploaded from [NYC Open Data](https://data.cityofnewyork.us/Transportation/DOT-Street-Lights-and-Traffic-Signals-311-Service-/jwvp-gyiq). This dataset contains all 311 Service Requests from 2010 to present which is automatically updated daily. Also, details related to services were included. 311 is a non-emergency phone number that people can call in many cities to find information about services, make complaints, or report problems like graffiti or road damage.
 
-Data on the ***number of federal firearms licensees in the U.S.*** was downloaded from [Statista](https://www.statista.com/statistics/215670/number-of-federal-firearms-licensees-in-the-us-by-state/). This source pulls data from the U.S. Bureau of Alcohol, Tobacco, Firearms and Explosives (ATF), and is used to approximate how many people actually got approved for gun licenses in each state. 
-
-***State total population data*** was also taken from [Statista](https://www.statista.com/statistics/183497/population-in-the-federal-states-of-the-us/). It was used to standardize the number of approved licenses and applications in different states. 
-
-***Unemployment data*** come from
-[FRED economic research](https://fred.stlouisfed.org/search?st=unemployment+rate). Each dataset describe percentage of unemployment in each state, not seasonally adjusted.
-
-***Chronic disease related data*** extract from
-[data.gov](https://catalog.data.gov/dataset/u-s-chronic-disease-indicators-cdi). Chronic disease related information, such as rate of heavy drinking, mental healthness, poverty, etc, in each state each year.
+***Weather Data*** was taken from [National Centers For Environmental Information](https://www.ncdc.noaa.gov/cdo-web/search). It was used to figure out the influences given by different weather types, such as fog, sunny, mist etc,.Also, influences caused by levels of precipitation on accident events were also evaluated. 
 
 <br>
 

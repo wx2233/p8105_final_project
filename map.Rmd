@@ -6,6 +6,12 @@ output:
     toc: true
     toc_float: true
 ---
+### Things you need to do if you went into a vehicle collison.
+  + If you need to pay a [Traffic Violation Bureau Traffic Ticket](https://www.ny.gov/services/pay-traffic-violation).You can pay a TVB ticket online, by mail or at a TVB office.
+  + If your driver's license been revoked, you can [Schedule a Road Test](https://www.ny.gov/services/schedule-road-test) to renew your driver's license.
+  + If your car has been crashed, you may need a new car and [Renew a Vehicle Registration Online](https://www.ny.gov/services/renew-vehicle-registration-online).
+
+
 ```{r include=FALSE}
 library(tidyverse)
 library(leaflet)
@@ -42,6 +48,10 @@ data_2018 %>%
 ```
 
 
+### Accident Number Across the Map
+
+Number of accident differs according to places.To be specific, more people injured on highway. Brooklin and Bronx had more injured cases than other boroughs. The map constructed by injured cases refected the severity of car collsions among boroughs.**Hover on the map to explore the cases**
+
 ```{r}
 data_2018 = tidy_data
 map_data = rename(data_2018, long = latitude, lat = longitude) 
@@ -66,4 +76,3 @@ map_data %>%
     radius = 0.5,
     popup = ~ label) 
 ```
-
