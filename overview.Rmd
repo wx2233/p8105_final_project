@@ -66,7 +66,10 @@ data_2018 %>%
 data_2018_seperate = tidy_data
 ```
 
-### Accident During the Day
+<br>
+
+
+### Accident Trend Over the Year
 
 ```{r include=FALSE}
 data_acci_day = tidy_data %>% 
