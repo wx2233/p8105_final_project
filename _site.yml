@@ -31,4 +31,4 @@ navbar:
       href: https://github.com/wx2233/p8105_final_project
 output:
   html_document: 
-    theme: cosmo
+    theme: flatly

@@ -9,6 +9,4 @@ title: "**Vehicle Collision in New York City**"
 <br>
 
 <center>
-<img src="image/car_collision.jpg" style="width:75%">  
-*Image from* [*51yuansu.com*](http://www.51yuansu.com/sc/rvrfzpqrtg.html)
-</center>
+<img src="image/car.jpg" style="width:75%">  
