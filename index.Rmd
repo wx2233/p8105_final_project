@@ -9,4 +9,4 @@ title: "**Vehicle Collision in New York City**"
 <br>
 
 <center>
-<img src="image/car.jpg" style="width:`150%">  
+<img src="image/home.jpg" style="width:`150%">  

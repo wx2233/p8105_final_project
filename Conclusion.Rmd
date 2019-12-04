@@ -9,6 +9,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 <br />
 
+<img src="image/conclusion.jpg" style="width:`150%"> 
+
+<br />
+
 * Car Collisions are associated with various complex factors. 
   + From our regression model, we found that *boroughs*, *precipitation levels*, *vehicles types*, and *holiday weekends* are significant covariates. 
   + However, it’s unexpected to see that *traffic signal*/*streetlight working conditions* and *weathers types other than raining* are not associated with car accidents numbers, which is against our original thinking. 
