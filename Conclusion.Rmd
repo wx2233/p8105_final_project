@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
   + Second, have good **driving habits**. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. 
   + Third, stay away from bad **weather**, as more accidents are likely to happen during severe weather. 
 
-* Brawbacks 
+* There are also some shortages associated with the *Motor Vehicle Collisions* dataset. 
   + We faced issues of missing data and non uniform observation names when we are trying to analyze *contributing factors* and *vehicle types*. 
     + The second highest contributing factor is unspecified, but knowing the right *contributing factors* could play a crucial rule when trying to reduce car accident numbers. Also, most *vehicle types* are recorded in different ways, which increased the difficulty to classify them. Better conclusion could be drawn if better data collecting mechanism is adopted.  
 
