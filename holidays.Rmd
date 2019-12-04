@@ -157,7 +157,8 @@ pivot_longer(
     bronx_total_injured:staten_island_total_injured,
     names_to = "borough", 
     values_to = "person_injured") %>% 
-  ggplot(aes(x = reorder(holiday, -total), y = person_injured, fill = borough)) +
+  mutate(holiday = fct_reorder(holiday, -total)) %>% 
+  ggplot(aes(x = holiday, y = person_injured, fill = borough)) +
   geom_bar(stat="identity") +
   theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
   labs(
@@ -237,7 +238,8 @@ pivot_longer(
     bronx_total_injured:staten_island_total_injured,
     names_to = "borough", 
     values_to = "person_injured") %>% 
-  ggplot(aes(x = reorder(holiday, -total), y = person_injured, fill = borough)) +
+  mutate(holiday = fct_reorder(holiday, -total)) %>% 
+  ggplot(aes(x = holiday, y = person_injured, fill = borough)) +
   geom_bar(stat="identity") +
   theme(legend.position = "right", axis.text.x = element_text(angle = 45)) +
   labs(
