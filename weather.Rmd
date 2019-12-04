@@ -6,7 +6,8 @@ output:
     toc: true
     toc_float: true
 ---
-### Number of Accident by weather
+### Bad weather causes bad accident
+  + A weather-related accident is defined as one that occurs in any adverse condition such as sleet, snow, rain, fog, winds or on slick pavement.If you want to know how bad weather increases driving accidents, please [click here](https://www.blumenshinelawgroup.com/how-bad-weather-increases-driving-accidents/).
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -35,7 +36,6 @@ theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = elemen
 ```
 
 
-## load collision data
 ```{r include=FALSE}
 data_2018 = 
   read_csv("./data/2018data.csv") %>% 
@@ -113,7 +113,7 @@ bind_cols(all_day_weather_df,collision_all) %>%
   select(-date_complete)
 ```
 
-
+### Number of Accident by Weather
 ```{r, echo = FALSE}
 weather_type_plot =  
 collision_weather %>% 
@@ -137,7 +137,7 @@ collision_weather %>%
 ggplotly(weather_type_plot)
 ```
 
-### Comments: 
+*Comments:* 
 
 It is surprising to see that sunny weather is the third most common weather type when car accidents tend to happen. On the other hand, people might be going outside more on sunny days, which can cause an increase in car accidents. Accident number in this plot is strongly related to how likely people will go out under different weather conditions. More people being outside means more accidents. 
 
@@ -199,6 +199,6 @@ daily_weather_collision %>%
 ggplotly(daily_weather_plot)
 ```
 
-### Comments: 
+*Comments:*
 
 More accidents happen during heavy/moderate precipitation as compared to light precipitation, which match our original hypothesis. 
