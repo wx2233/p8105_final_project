@@ -1,6 +1,10 @@
 ---
 title: "Regression"
-output: html_document
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -15,9 +19,9 @@ library(corrplot)
 knitr::opts_chunk$set(
 echo = TRUE,
 warning = FALSE,
-fig.width = 10, 
-  fig.height = 10,
-  out.width = "100%"
+fig.width = 9, 
+  fig.height = 9,
+  out.width = "80%"
 )
 options(
   ggplot2.continuous.colour = "viridis",
@@ -218,54 +222,56 @@ boro_daytime_weather_light_vt_hol =
 
 ```
 
-### Method
+### Description
 
 In this research, we try to find relationship between collision and several factors. As a result, accident numbers is considered to be outcome (dependent variable), exposure of interest below are considered to be independent variables. Multiple linear regression is conducted to testify if correlation between outcome and predictors is significant.
 
-*1.collisionnumber: accident number at specific borough, date and time*
+* collisionnumber: accident number at specific borough, date and time
 
-*2.daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)*
+* daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)
 
-*3.borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.*
+* borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.
 
-*4.num_light: numbers of unfinished street light services*  
+* num_light: numbers of unfinished street light services 
 
-*5.num_signal: number of nufinished traffic signal services*
+* num_signal: number of nufinished traffic signal services
 
-*6.weathertype: weather type (fog, haze, mist, rain, snow and sunny)*
+* weathertype: weather type (fog, haze, mist, rain, snow and sunny)
 
-*7.prep: percipitation*
+* prep: percipitation
 
-*8.vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date*
+* vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date
 
-*9.holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.*
+* holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.
 
 ### Result
 
-**1. Correlation Matrix**
+#### 1. Correlation Matrix**
 
-```{r echo=FALSE}
-cor(
-  cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
+```{r}
+cor_data = 
+  cor(cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
         model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
-  ) %>% 
+  )
+
+cor_data %>% 
   corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
 Correlation between most variables is acceptable, but relationship between weathertype sunny and weathertype rain is above 70%, which indicate collinearity. When establishing model, we should always know that weathertype(sunny) shows most of information that weathertype(rain) contains.
 
-**2 Box-Cox Transformation**
+#### 2. Box-Cox Transformation**
 
-```{r echo=FALSE, fig.width = 5, fig.height = 5}
+```{r fig.width = 9, fig.height = 6,out.width= "60%", fig.align = 'center'}
 fit2 = lm(collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
 MASS::boxcox(fit2)
 ```
 
 Box-Cox method applies a transformation by raising Y to different power, as we can see above, λ is close to 0, so we need to do natural logarithm transformation, turn Y into ln(Y).
 
-**3. MLR result**
+#### 3. MLR result**
 
-```{r echo=FALSE}
+```{r}
 boro_daytime_weather_light_vt_hol = boro_daytime_weather_light_vt_hol %>%
   mutate(ln_collisionnumber = log(collisionnumber, base = exp(1)))
 fit2 = lm(ln_collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
@@ -287,9 +293,9 @@ The effect of "vehicle" is significant. "others" works as reference variables. A
 
 Last but not least, the influence of "holiday1" is also significant. It means that during holiday and weekend, there will be fewer accidents.
 
-**3. Model diagnostics**
+#### 4. Model diagnostics
 
-```{r echo=FALSE}
+```{r fig.align= "center"}
 par(mfrow = c(2,2))
 plot(fit2)
 ```

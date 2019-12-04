@@ -20,7 +20,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -247,7 +251,67 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -257,6 +321,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -340,6 +414,14 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Regression</h1>
@@ -347,28 +429,51 @@ $(document).ready(function () {
 </div>
 
 
-<div id="method" class="section level3">
-<h3>Method</h3>
+<div id="description" class="section level3">
+<h3>Description</h3>
 <p>In this research, we try to find relationship between collision and several factors. As a result, accident numbers is considered to be outcome (dependent variable), exposure of interest below are considered to be independent variables. Multiple linear regression is conducted to testify if correlation between outcome and predictors is significant.</p>
-<p><em>1.collisionnumber: accident number at specific borough, date and time</em></p>
-<p><em>2.daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)</em></p>
-<p><em>3.borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.</em></p>
-<p><em>4.num_light: numbers of unfinished street light services</em></p>
-<p><em>5.num_signal: number of nufinished traffic signal services</em></p>
-<p><em>6.weathertype: weather type (fog, haze, mist, rain, snow and sunny)</em></p>
-<p><em>7.prep: percipitation</em></p>
-<p><em>8.vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date</em></p>
-<p><em>9.holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.</em></p>
+<ul>
+<li><p>collisionnumber: accident number at specific borough, date and time</p></li>
+<li><p>daytime: According to analysis in overview, frequency of accident and injured people in the period of 8 am-20 pm is higher than other period of time. So we separate 24 hours into 2 catagories:use 1 to represent 8 am-20 pm (12 hours), 0 to represent elsewhere (12 hours)</p></li>
+<li><p>borough: There are five different boroughs, Bronx, Brooklyn, Manhattan, Queens and Staten Island.</p></li>
+<li><p>num_light: numbers of unfinished street light services</p></li>
+<li><p>num_signal: number of nufinished traffic signal services</p></li>
+<li><p>weathertype: weather type (fog, haze, mist, rain, snow and sunny)</p></li>
+<li><p>prep: percipitation</p></li>
+<li><p>vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date</p></li>
+<li><p>holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.</p></li>
+</ul>
 </div>
 <div id="result" class="section level3">
 <h3>Result</h3>
-<p><strong>1. Correlation Matrix</strong></p>
-<p><img src="Regression_files/figure-html/unnamed-chunk-10-1.png" width="100%" /></p>
+<div id="correlation-matrix" class="section level4">
+<h4>1. Correlation Matrix**</h4>
+<pre class="r"><code>cor_data = 
+  cor(cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
+        model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
+  )
+
+cor_data %&gt;% 
+  corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 45, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
+<p><img src="Regression_files/figure-html/unnamed-chunk-10-1.png" width="80%" /></p>
 <p>Correlation between most variables is acceptable, but relationship between weathertype sunny and weathertype rain is above 70%, which indicate collinearity. When establishing model, we should always know that weathertype(sunny) shows most of information that weathertype(rain) contains.</p>
-<p><strong>2 Box-Cox Transformation</strong></p>
-<p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
+</div>
+<div id="box-cox-transformation" class="section level4">
+<h4>2. Box-Cox Transformation**</h4>
+<pre class="r"><code>fit2 = lm(collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+MASS::boxcox(fit2)</code></pre>
+<p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /></p>
 <p>Box-Cox method applies a transformation by raising Y to different power, as we can see above, λ is close to 0, so we need to do natural logarithm transformation, turn Y into ln(Y).</p>
-<p><strong>3. MLR result</strong></p>
+</div>
+<div id="mlr-result" class="section level4">
+<h4>3. MLR result**</h4>
+<pre class="r"><code>boro_daytime_weather_light_vt_hol = boro_daytime_weather_light_vt_hol %&gt;%
+  mutate(ln_collisionnumber = log(collisionnumber, base = exp(1)))
+fit2 = lm(ln_collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
+
+summary(fit2) %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -528,13 +633,20 @@ $(document).ready(function () {
 <p>p-value of “factor(prep)1” is smaller than 0.05. Increasing of rainfall will significantly raise the number of accidents. However, the influence of weather is not significant.</p>
 <p>The effect of “vehicle” is significant. “others” works as reference variables. All five indicator variables “vehiclepassenger vehicle”, “vehiclesedan”, “vehicletruck”, “vehicletaxi” and “vehiclesport utility vehicle” are significant. Driving passenger vehicle, sedan and sport utility vehcle will have a higher risk of involving in accidents, while driving truck can reduce the risk of accidents.</p>
 <p>Last but not least, the influence of “holiday1” is also significant. It means that during holiday and weekend, there will be fewer accidents.</p>
-<p><strong>3. Model diagnostics</strong></p>
-<p><img src="Regression_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
+</div>
+<div id="model-diagnostics" class="section level4">
+<h4>4. Model diagnostics</h4>
+<pre class="r"><code>par(mfrow = c(2,2))
+plot(fit2)</code></pre>
+<p><img src="Regression_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The four graph above prove the homoscedasticity of residual, prove that rsidual’s expected value is 0, besides, residual is normality. No influential observation shows in the dataset. All assumption is satisfied.</p>
+</div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -566,7 +678,38 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
