@@ -177,7 +177,7 @@ ggplotly(res_acci_countplot)
 
 ### Comments: 
 
-Overall smooth line indicates an increasing trend of accident number when restaurant number was under 2000. After this split point, the line slightly decreased.This means that the more the restaurant, the more likily an alcohol involvement car accident could happen. However, when trere are lots of restaurant in a certain area, this may not be an factor which influence alcohol involvement. Further, number of accident greatly influenced by location. For example, West Queens in borough Queens had extremly high number of accident. 
+Overall smooth line indicates an increasing trend of accident number when restaurant number was under 2000. After this split point, the line slightly decreased.This means that the more the restaurant, the more likely an alcohol involvement car accident could happen. However, when there are lots of restaurant in a certain area, this may not be an factor which influence alcohol involvement. Further, number of accident greatly influenced by location. For example, West Queens in borough Queens had extremly high number of accident. 
 
 According to NYC government,in West Queens, 17% of adults reported engaging in at least one episode of binge drinking (defined as consuming 5 or more drinks on one occasion) in the past month in 2002.Meanwhile, that statistics for NYC was 14%.Click here for more information on [Community Health Profiles in West Queens](https://www1.nyc.gov/assets/doh/downloads/pdf/data/2006chp-402.pdf).
 

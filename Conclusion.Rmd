@@ -20,7 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 * We do find some very meaningful trends using our dataset. 
   + First, avoid accident prone **hours and holidays**. Accidents are more likely to happen during rush hours, while the most fatal ones happen early in the morning (6 o'clock) and at night (9 o’clock). Moreover, holiday weekends are more traffic prone. 
   + Second, have good **driving habits**. Keep safe distance and backing up safely are always the keys to prevent a large proportion of accidents. In addition, one should always pay special attention when changing lanes in Manhattan. 
-  + Third, stay away from bad **weather**, as more accidents are likely to happen during severe weather. 
+  + Third, stay away from bad **weather**, as extreme accidents are likely to happen during heavy/moderate rain.
+  + Fourth, don't drunk when you drive. After you finish eating and drinking in **restaurant**, call a taxi instead of trying to drive back home by yourself.
 
 <br />
 
