@@ -6,6 +6,11 @@ output:
     toc: true
     toc_float: true
 ---
+### Do not drive after drink!!!
+   + Every day, almost 30 people in the United States die in drunk-driving crashes--that's one person every 48 minutes. [NHTSA](https://www.nhtsa.gov/risky-driving/drunk-driving) is dedicated to eliminating risky behaviors on United States's roads.
+   + New York uses state and federal funding for a number of programs aimed at reducing drunk driving.[Click here](https://www.transportation.gov/mission/health/Impaired-Driving-Laws-Enforcement-and-Prevention) to see what the government had done.
+
+
 ```{r include=FALSE}
 library(tidyverse)
 library(plotly)
@@ -154,7 +159,7 @@ res_acci_count = left_join(acci_count, res_count, by = "zipcode") %>%
 ## write.csv(res_acci_count,file = "./large_data/res_acci_count.csv")
 ```
 
-## Plot 
+## Alcohol Involvement Accident VS Restaurant Number
 ```{r message=FALSE, warning=FALSE}
 res_acci_countplot = ggplot(res_acci_count, aes(x = res_count, y = acci_count)) +
   geom_point(aes(shape = borough,color = location))+
@@ -170,4 +175,12 @@ res_acci_countplot = ggplot(res_acci_count, aes(x = res_count, y = acci_count)) 
 ggplotly(res_acci_countplot)
 ```
 
+*Comments*: 
 
+Overall smooth line indicates an increasing trend of accident number when restaurant number was under 2000. After this split point, the line slightly decreased.This means that the more the restaurant, the more likily an alcohol involvement car accident could happen. However, when trere are lots of restaurant in a certain area, this may not be an factor which influence alcohol involvement. Further, number of accident greatly influenced by location. For example, West Queens in borough Queens had extremly high number of accident. 
+
+According to NYC government,in West Queens, 17% of adults reported engaging in at least one episode of binge drinking (defined as consuming 5 or more drinks on one occasion) in the past month in 2002.Meanwhile, that statistics for NYC was 14%.Click here for more information on [Community Health Profiles in West Queens](https://www1.nyc.gov/assets/doh/downloads/pdf/data/2006chp-402.pdf).
+
+Moreover, Brooklyn has been famous for delicious food while also famous for its bad security.Compared to other borough, Brooklyn had higher accident number adjusted for restaurant number. 
+
+Compared to Queens and Brooklyn, Manhattan had far less accident number though far more restaurants located there.Reason for this may be explained by better traffic security system, higher number of traffic police, better surveillance system in Manhattan.
