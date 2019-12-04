@@ -1,0 +1,308 @@
+---
+title: "Accident Overview"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r,include=FALSE}
+library(tidyverse)
+library(plotly)
+library(readr)
+library(viridis)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "80%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom",plot.title = element_text(face = "bold")))
+```
+
+
+```{r,include=FALSE}
+data_2018 = 
+  read_csv("./large_data/2018data.csv") %>% 
+  janitor::clean_names() 
+newnames = colnames(data_2018) %>% 
+  str_replace("number_of_","") 
+names(data_2018) = newnames
+
+tidy_data = 
+data_2018 %>% 
+  mutate(
+    date_complete = date 
+  ) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  separate(time, into = c("hour", "minute"), sep = ":") %>%
+  mutate(
+    date_paste = as.Date(paste("2018",month,day,sep = "-"))
+  ) %>% 
+  select(-zip_code, -location, -on_street_name, -cross_street_name, -off_street_name,-collision_id,-year) %>% 
+  rename("vehicle_type" = "vehicle_type_code_1",
+         "cause" = "contributing_factor_vehicle_1") %>% 
+  mutate( day = as.numeric(day),
+          month = as.numeric(month),
+          hour = as.numeric(hour),
+          minute = as.numeric(minute),
+          latitude = replace_na(latitude,0),
+          vehicle_type = str_to_lower(vehicle_type)
+  ) %>%
+  filter( latitude != 0) %>% 
+  drop_na(borough)
+```  
+
+
+```{r,include=FALSE}
+data_2018_seperate = tidy_data
+```
+
+### Accident During the Day
+
+```{r include=FALSE}
+data_acci_day = tidy_data %>% 
+  group_by(date_paste) %>% 
+  mutate(
+    sum_acci = n()
+  ) %>% 
+  select(date_paste, sum_acci) %>% 
+  distinct()
+
+data_kill_injured_day = tidy_data %>% 
+  group_by(date_paste) %>% 
+  mutate(
+    sum_injured = sum(persons_injured,na.rm = TRUE),
+    sum_killed = sum(persons_killed,na.rm = TRUE)
+  ) %>% 
+  select(date_paste, sum_injured, sum_killed) %>% 
+  distinct( ) 
+
+data_day = cbind(data_acci_day, data_kill_injured_day) %>% 
+  select(-date_paste1)
+data_day= rename(data_day, 
+                "accident number"  = "sum_acci",
+                "people injured number"  = "sum_injured" , 
+                 "people killed number" = "sum_killed" ,
+                 "date" = "date_paste" ) 
+```
+
+
+```{r,echo=FALSE}
+data_day  = 
+  data_day %>% 
+  pivot_longer(
+    `accident number`:`people killed number`,
+    names_to   = "type",
+    values_to = "number"
+  )
+
+plot_day = 
+  data_day %>% 
+  ggplot(aes(x = date,y = number, color = type))+
+  geom_line()+
+  labs(
+   title = "Trend Over the Year",
+   x = "Day of the Year",
+   y = "Number") +
+  annotate("text", x = as.Date("2018-11-15") , y = 695, label = "2018-11-15")
+
+plot_kill_injured_day = ggplotly(plot_day)
+plot_kill_injured_day
+```
+
+*Comments*: 
+
+There is a steady trend over the year of 2018. Except that an outlier for accident number is observed around November. Aftering some additional exploration, we found that it's 15 Nov 2018. We looked into this date and discovered that it is the date of a severe winter storm in New York, which can explain the sudden increase in accident number. 
+
+**A video of the winter storm that day can be found at [windstorm](https://www.youtube.com/watch?v=4mLuO9BYPfU) **
+
+<br>
+
+### Proportion of Accident by Borough
+
+```{r,echo=FALSE}
+boro_events = 
+  tidy_data %>% 
+  drop_na(borough, persons_injured, persons_killed) %>%
+  group_by(borough) %>%
+  summarize(accident = n(),
+            injured = sum(persons_injured),
+            killed = sum(persons_killed)) %>%
+  mutate(prop_accident = round(accident/sum(accident),4),
+         prop_injured = round(injured/sum(injured),4),
+         prop_killed = round(killed/sum(killed),4)) %>%
+  pivot_longer(
+    prop_accident:prop_killed,
+    values_to = "proportion",
+    names_prefix = "prop_",
+    names_to = "type",
+  ) 
+
+boro_events_plot = 
+  boro_events %>% 
+  ggplot(aes(x = borough, y = proportion, fill = type)) +
+  geom_bar(stat = "identity",position = "dodge") +
+  labs(title ="Proportion of Accident and Injured People by Borough", 
+       x = 'Borough',
+       y = 'Proportion'
+  )
+
+ggplotly(boro_events_plot)
+
+```
+
+*Comments*: 
+
+There is a positive correlation between number of accidents and number killed/injured adjusting for boroughs. In addition, accidents happened in Queens are the most fatal among all boroughs.  
+
+```{r include=FALSE}
+hour_events = 
+  tidy_data %>% 
+  drop_na(hour, persons_injured, persons_killed) %>%
+  group_by(hour) %>%
+  summarize(accident = n(),
+            injured = sum(persons_injured),
+            killed = sum(persons_killed)) %>%
+  mutate(prop_accident = round(accident/sum(accident),4),
+         prop_injured = round(injured/sum(injured),4),
+         prop_killed = round(killed/sum(killed),4)) %>%
+  pivot_longer(
+    prop_accident:prop_killed,
+    values_to = "proportion",
+    names_prefix = "prop_",
+    names_to = "type",
+  ) 
+```
+
+
+```{r}
+hour_events_plot =
+hour_events %>% 
+  ggplot(aes(x = hour, y = proportion, color = type)) +
+  geom_line() +
+  annotate("rect", xmin = 8, xmax = 20, ymin = 0, ymax = Inf, fill = "blue", alpha = .1) +
+  labs(
+    title = "Proportion of Accident and Injured People by Hour", 
+    x =  'Hour',
+    y = 'Proportion')
+
+hour_events_plot = ggplotly(hour_events_plot)
+hour_events_plot[['x']][['layout']][['shapes']] <- c()
+
+hour_events_plot = layout(hour_events_plot, shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"), opacity = 0.3, x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"))
+
+hour_events_plot
+```
+
+*Comments*: 
+
+Most car accidents happen around 5 pm, when people are getting off work. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
+<br />
+
+### Top 10 Causes of Accident
+
+```{r include=FALSE}
+df_cause =  
+  tidy_data %>% 
+  select(borough,cause) %>% 
+      filter(!(cause %in% c('', 
+                            'Unspecified', 
+                            'Driver Inattention/Distraction',
+                            'Other Vehicular',
+                            'Failure to Yield Right-of-Way'))
+             ) 
+df_cause_top = 
+  df_cause %>%
+  group_by(cause) %>%
+  summarise(count = n()) %>%
+  top_n(10, count) %>% 
+  ungroup() %>% 
+  arrange(count)
+
+cause_by_boro =  
+  df_cause %>% 
+  semi_join(., df_cause_top, by = "cause") %>%
+  group_by(borough, cause) %>%
+  summarise(count = n()) %>% 
+  # reorder cause levels for desirable order in bar chart display:
+  mutate(
+    cause = factor(cause, levels = pull(df_cause_top,cause))
+    ) 
+
+cause_by_boro_all = 
+  cause_by_boro %>% 
+  group_by(borough) %>%
+  summarise(total = sum(count))
+
+cause_by_boro = 
+  left_join(cause_by_boro, cause_by_boro_all, by = "borough") %>%
+  mutate(ratio = count / total) %>%
+  select(-count, -total) 
+```
+
+```{r}
+cause_by_boro_plot =
+  cause_by_boro %>% 
+  ggplot(aes(x = cause, y = ratio, fill = borough)) +
+      geom_bar(width = 0.5, stat = 'identity', show.legend = F) +
+      coord_flip() +
+      facet_grid(.~borough) +
+      labs(title = 'Accident Causes by Borough',
+           x = NULL,
+           y = NULL) + 
+  theme(axis.text.x = element_text(size = 6, angle = 45))
+cause_by_boro_plotly = ggplotly(cause_by_boro_plot)  
+
+cause_by_boro_plotly %>% 
+  layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.5, y = -0.2))  
+```
+
+*Comments*: 
+
+Try not to follow too closely while driving, since it’s the most common causal factor for collisions overall. When driving in Manhattan, be especially careful when passing or changing lanes as those factors contributes to around 30% of all accidents in Manhattanm and is a lot higher compare to other boroughs. 
+
+<br />
+
+### Collisions of Day for Different Vehicles
+
+```{r include=FALSE}
+vehicle_type_data = 
+  tidy_data %>% 
+  mutate(
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
+    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
+  group_by(vehicle_type,hour) %>% 
+  summarize(
+    number = n()
+  )
+```
+
+```{r}
+vehicle_type_plot = 
+vehicle_type_data %>% 
+  ggplot(aes(x = hour, y = number, color = vehicle_type)) +
+  geom_line() +
+  labs(
+    color = "vehicle type",
+    title = "Collisions of Day for Different Vehicles",
+    x = "Hour of Day",
+    y = "Number of Collisions"
+    )
+  
+ggplotly(vehicle_type_plot)
+```
+
+*Comments*: 
+
+Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. The time that collisions are most likely to happen is around eight o’clock in the morning and five o’clock in the afternoon. 

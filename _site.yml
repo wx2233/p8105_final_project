@@ -10,7 +10,7 @@ navbar:
       - text: "Map"
         href: map.html
       - text: "Accident Overview"
-        href: year.html
+        href: overview.html
     - text: "Collision by Borough"
       href: https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/
     - text: "Related Work"
@@ -28,7 +28,7 @@ navbar:
     - icon: fa-envelope fa-lg
       href: mailto:<wx2233@cumc.columbia.edu>
     - icon: fa-github fa-lg
-      href: https://github.com/<p8105_final_project>
+      href: https://github.com/wx2233/p8105_final_project
 output:
   html_document: 
     theme: cosmo
