@@ -50,7 +50,7 @@ data_2018 %>%
 
 ### Accident Number Across the Map
 
-Number of accident differs according to places.To be specific, more people injured on highway. Brooklin and Bronx had more injured cases than other boroughs. The map constructed by injured cases refected the severity of car collsions among boroughs. **Hover on the map to explore the cases**
+Number of accident differs according to places.To be specific, more people injured on highway. Brooklyn and Bronx had more injured cases than other boroughs. The map constructed by injured cases refected the severity of car collsions among boroughs. **Hover on the map to explore the cases**
 
 ```{r}
 data_2018 = tidy_data
