@@ -221,6 +221,45 @@ More car accidents happens from 8am to 8 pm, when people are on their way to wor
 
 <br>
 
+### Collisions of Day for Different Vehicles
+
+```{r include=FALSE}
+vehicle_type_data = 
+  tidy_data %>% 
+  mutate(
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
+    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
+  group_by(vehicle_type,hour) %>% 
+  summarize(
+    number = n()
+  )
+```
+
+```{r}
+vehicle_type_plot = 
+vehicle_type_data %>% 
+  ggplot(aes(x = hour, y = number, color = vehicle_type)) +
+  geom_line() +
+  labs(
+    color = "vehicle type",
+    title = "Collisions of Day for Different Vehicles",
+    x = "Hour of Day",
+    y = "Number of Collisions"
+    ) +
+  theme(legend.title = element_blank())
+
+ggplotly(vehicle_type_plot) %>% 
+    layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.4, y = -0.2))  
+```
+
+*Comments*: 
+
+Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. Two peaks of collisions are around eight o’clock in the morning and five o’clock in the afternoon. 
+
+<br>
+
 ### Top 10 Causes of Accident
 
 ```{r include=FALSE}
@@ -284,41 +323,4 @@ ggplotly(cause_by_boro_plot)  %>%
 
 Try not to follow too closely while driving, since it’s the most common causal factor for collisions overall. When driving in Manhattan, be especially careful when passing or changing lanes as those factors contributes to around 30% of all accidents in Manhattanm and is a lot higher compare to other boroughs. 
 
-<br />
 
-### Collisions of Day for Different Vehicles
-
-```{r include=FALSE}
-vehicle_type_data = 
-  tidy_data %>% 
-  mutate(
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
-    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
-  group_by(vehicle_type,hour) %>% 
-  summarize(
-    number = n()
-  )
-```
-
-```{r}
-vehicle_type_plot = 
-vehicle_type_data %>% 
-  ggplot(aes(x = hour, y = number, color = vehicle_type)) +
-  geom_line() +
-  labs(
-    color = "vehicle type",
-    title = "Collisions of Day for Different Vehicles",
-    x = "Hour of Day",
-    y = "Number of Collisions"
-    ) +
-  theme(legend.title = element_blank())
-
-ggplotly(vehicle_type_plot) %>% 
-    layout(legend = list(orientation = "h",   # show entries horizontally
-                     x = 0.4, y = -0.2))  
-```
-
-*Comments*: 
-
-Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. Two peaks of collisions are around eight o’clock in the morning and five o’clock in the afternoon. 
