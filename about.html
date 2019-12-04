@@ -265,6 +265,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -430,22 +436,18 @@ div.tocify {
 <h3><strong>Methods</strong></h3>
 <p>Data from five sources were considered for this project. The data sources, scraping methods and cleaning procedures for each dataset are described below.</p>
 <ul>
-<li><p>The Github repository for this project can be found <a href="https://github.com/ChristineLong/p8105_Final_Project">here</a>.</p></li>
-<li><p>The final website can be found <a href="https://eshea6.github.io/us_gun_violence.github.io/">here</a>, and corresponding Github repository for the website is located <a href="https://github.com/eshea6/us_gun_violence.github.io">here</a>.</p></li>
-<li><p>The final report is housed in a repository <a href="https://github.com/devon-m2/p8105_Gun-Violence_Final-Report">here</a>.</p></li>
+<li><p>The Github repository for this project can be found <a href="https://github.com/wx2233/p8105_final_project">here</a>.</p></li>
+<li><p>The final website can be found <a href="https://eshea6.github.io/us_gun_violence.github.io/">here</a></p></li>
+<li><p>The shiny repository can be found <a href="https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/">here</a> <br></p></li>
 </ul>
-<p><br></p>
 </div>
 <div id="data" class="section level3">
 <h3><strong>Data</strong></h3>
 <p><strong><em>NYPD Motor Vehicle Collisions-Crashes Data</em></strong> can be accessed <a href="https://www.kaggle.com/jameslko/gun-violence-data">here</a> and is from the <a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">NYC Open Data</a>. NYC Open Data is free public data published by New York City agencies and other partners. The Motor Vehicle Collisions data tables contain information from all police reported motor vehicle collisions in NYC. The police report <a href="https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/documents/ny_overlay_mv-104an_rev05_2004.pdf">MV104-AN</a> is required to be filled out for collisions where someone is injured or killed, or where there is at least $1000 worth of damage.</p>
 <p><strong><em>DOHMH New York City Restaurant Inspection Results Data</em></strong> was obtained from the <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">NYC Open Data</a>. The dataset was used to assess the association between the restaurant number and alcohol involved collision number.</p>
-<p><strong><em>Gun law scores of states</em></strong> is created by the <a href="https://lawcenter.giffords.org/scorecard/#rankings">Giffords Law Center</a> using “a comprehensive grading rubric that assigns positive point values to gun safety policies, such as private-sale background checks and extreme risk protection orders, and negative point values to dangerous laws, such as permitless concealed carry”.</p>
-<p>Data on <strong><em>gun license applications</em></strong> was taken from the <a href="https://www.statista.com/statistics/249687/number-of-background-checks-done-by-the-nics-in-the-us-by-state/">National Instant Criminal Background Check System (NICS)</a>, which is used by Federal Firearms Licensees (FFLs) to instantly determine whether a prospective buyer is eligible to buy firearms or explosives. This data is used to approximate how many people tried to apply for gun licenses in each state.</p>
-<p>Data on the <strong><em>number of federal firearms licensees in the U.S.</em></strong> was downloaded from <a href="https://www.statista.com/statistics/215670/number-of-federal-firearms-licensees-in-the-us-by-state/">Statista</a>. This source pulls data from the U.S. Bureau of Alcohol, Tobacco, Firearms and Explosives (ATF), and is used to approximate how many people actually got approved for gun licenses in each state.</p>
-<p><strong><em>State total population data</em></strong> was also taken from <a href="https://www.statista.com/statistics/183497/population-in-the-federal-states-of-the-us/">Statista</a>. It was used to standardize the number of approved licenses and applications in different states.</p>
-<p><strong><em>Unemployment data</em></strong> come from <a href="https://fred.stlouisfed.org/search?st=unemployment+rate">FRED economic research</a>. Each dataset describe percentage of unemployment in each state, not seasonally adjusted.</p>
-<p><strong><em>Chronic disease related data</em></strong> extract from <a href="https://catalog.data.gov/dataset/u-s-chronic-disease-indicators-cdi">data.gov</a>. Chronic disease related information, such as rate of heavy drinking, mental healthness, poverty, etc, in each state each year.</p>
+<p>Data on <strong><em>U.S legal holidays</em></strong> was taken from the <a href="https://www.redcort.com/us-federal-bank-holidays/">Federal Holidays</a>.Federal holidays may affect the number of accidents since number of people going outside varies among holidays.</p>
+<p><strong><em>Traffic Signals Data</em></strong> is uploaded from <a href="https://data.cityofnewyork.us/Transportation/DOT-Street-Lights-and-Traffic-Signals-311-Service-/jwvp-gyiq">NYC Open Data</a>. This dataset contains all 311 Service Requests from 2010 to present which is automatically updated daily. Also, details related to services were included. 311 is a non-emergency phone number that people can call in many cities to find information about services, make complaints, or report problems like graffiti or road damage.</p>
+<p><strong><em>Weather Data</em></strong> was taken from <a href="https://www.ncdc.noaa.gov/cdo-web/search">National Centers For Environmental Information</a>. It was used to figure out the influences given by different weather types, such as fog, sunny, mist etc,.Also, influences caused by levels of precipitation on accident events were also evaluated.</p>
 <p><br></p>
 </div>
 <div id="screencast" class="section level3">
