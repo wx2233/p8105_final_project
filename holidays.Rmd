@@ -6,6 +6,9 @@ output:
     toc: true
     toc_float: true
 ---
+### Be careful if you want to go out on holidays!!!
+  + If you want to know how many people went out on 2018 holidays, you can [click here](https://newsroom.aaa.com/2018/12/2018-busiest-holiday-travel-season-on-record/) for information.
+  +  Select days in November and December are designated [Gridlock Alert Days](https://www.amny.com/transit/nyc-traffic-1-21176466/), as traffic volumes increase with holiday shopping and travel, as well as special event street closures. Drivers can expect that travel through Midtown will take twice as long as a typical day of week.
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -257,7 +260,9 @@ plot_day
 
 ### Comments: 
 
-Most persons injured happens on the day of Labor Day and Labor Day weekend, while least persons injured in on Thanksgiving Day. However, Thanksgiving weekend is the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured. 
+Most persons injured cases happened on Labor Day and Labor Day weekend, while least number of persons injured cases was on Thanksgiving Day. However, Thanksgiving weekend was the second most holiday weekends when most persons are injured. It could be explained by that people tend to stay home on the day of thanksgiving, while most people might be out shopping on Thanksgiving weekend, which increases the number of persons injured. 
 
 So try to avoid going out on Labor Day weekend and Thanksgiving week, and be careful if you have to. 
+
+![](http://5b0988e595225.cdn.sohucs.com/images/20171012/8fa8916f15c24f4692d007b95e3d29a4.gif)
 
