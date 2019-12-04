@@ -249,19 +249,22 @@ cause_by_boro =
   select(-count, -total) 
 ```
 
-```{r, fig.width = 20, fig.height= 6 }
+```{r}
 cause_by_boro_plot =
   cause_by_boro %>% 
   ggplot(aes(x = cause, y = ratio, fill = borough)) +
       geom_bar(width = 0.5, stat = 'identity', show.legend = F) +
       coord_flip() +
       facet_grid(.~borough) +
-      labs(title = 'Collisions by Causes',
+      labs(title = 'Accident Causes by Borough',
            x = NULL,
-           y = NULL) +
-  scale_x_discrete(breaks = seq(0, 0.3, by = 0.1)) + 
+           y = NULL) + 
   theme(axis.text.x = element_text(size = 6, angle = 45))
-ggplotly(cause_by_boro_plot)
+cause_by_boro_plotly = ggplotly(cause_by_boro_plot)  
+
+cause_by_boro_plotly %>% 
+  layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.5, y = -0.2))  
 ```
 
 *Comments*: 
