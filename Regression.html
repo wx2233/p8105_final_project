@@ -16,7 +16,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -109,33 +109,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 60px;
+  padding-top: 61px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h2 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h3 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h4 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h5 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h6 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .dropdown-submenu {
   position: relative;
@@ -361,10 +361,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="map.html">Map</a>
+      <a href="overview.html">Accident Overview</a>
     </li>
     <li>
-      <a href="overview.html">Accident Overview</a>
+      <a href="map.html">Map</a>
     </li>
   </ul>
 </li>
@@ -443,6 +443,7 @@ div.tocify {
 <li><p>vehicle: There are six kinds of vehicle catagories(passenger vehicle, sedan, sport utility vehicle, truck, taxi and others). We counts the vehicle catagory that have greatest number of cars at specific time, borough and date</p></li>
 <li><p>holiday: use 1 to represent the day that is a holiday and weekend, use 0 to represent rest circumstance.</p></li>
 </ul>
+<p><br></p>
 </div>
 <div id="result" class="section level3">
 <h3>Result</h3>
@@ -457,6 +458,7 @@ cor_data %&gt;%
   corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 45, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-10-1.png" width="80%" /></p>
 <p>Correlation between most variables is acceptable, but relationship between weathertype sunny and weathertype rain is above 70%, which indicate collinearity. When establishing model, we should always know that weathertype(sunny) shows most of information that weathertype(rain) contains.</p>
+<p><br></p>
 </div>
 <div id="box-cox-transformation" class="section level4">
 <h4>2. Box-Cox Transformation**</h4>
@@ -464,6 +466,7 @@ cor_data %&gt;%
 MASS::boxcox(fit2)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /></p>
 <p>Box-Cox method applies a transformation by raising Y to different power, as we can see above, λ is close to 0, so we need to do natural logarithm transformation, turn Y into ln(Y).</p>
+<p><br></p>
 </div>
 <div id="mlr-result" class="section level4">
 <h4>3. MLR result**</h4>
@@ -633,13 +636,14 @@ summary(fit2) %&gt;%
 <p>p-value of “factor(prep)1” is smaller than 0.05. Increasing of rainfall will significantly raise the number of accidents. However, the influence of weather is not significant.</p>
 <p>The effect of “vehicle” is significant. “others” works as reference variables. All five indicator variables “vehiclepassenger vehicle”, “vehiclesedan”, “vehicletruck”, “vehicletaxi” and “vehiclesport utility vehicle” are significant. Driving passenger vehicle, sedan and sport utility vehcle will have a higher risk of involving in accidents, while driving truck can reduce the risk of accidents.</p>
 <p>Last but not least, the influence of “holiday1” is also significant. It means that during holiday and weekend, there will be fewer accidents.</p>
+<p><br></p>
 </div>
 <div id="model-diagnostics" class="section level4">
 <h4>4. Model diagnostics</h4>
 <pre class="r"><code>par(mfrow = c(2,2))
 plot(fit2)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<p>The four graph above prove the homoscedasticity of residual, prove that rsidual’s expected value is 0, besides, residual is normality. No influential observation shows in the dataset. All assumption is satisfied.</p>
+<p>The four graph above prove the homoscedasticity of residual. The variance of residual does not change when fitted value changes. And it is also proved that residual’s expected value is 0. Through residual flutuates slightly around zero, it is still acceptable. Besides, residual is normality. No influential observation shows in the dataset. All assumption is satisfied.</p>
 </div>
 </div>
 

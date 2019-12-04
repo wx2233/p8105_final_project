@@ -7,10 +7,10 @@ navbar:
       href: about.html
     - text: "Overview"
       menu:
-      - text: "Map"
-        href: map.html
       - text: "Accident Overview"
         href: overview.html
+      - text: "Map"
+        href: map.html
     - text: "Collision by Borough"
       href: https://wx2233-shiny.shinyapps.io/final_shiny_dashboard/
     - text: "Related Work"
@@ -31,4 +31,4 @@ navbar:
       href: https://github.com/wx2233/p8105_final_project
 output:
   html_document: 
-    theme: flatly
+    theme: journal

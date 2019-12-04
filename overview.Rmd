@@ -96,7 +96,7 @@ data_day= rename(data_day,
 ```
 
 
-```{r,echo=FALSE}
+```{r}
 data_day  = 
   data_day %>% 
   pivot_longer(
@@ -131,7 +131,7 @@ There is a steady trend over the year of 2018. Except that an outlier for accide
 
 ### Proportion of Accident by Borough
 
-```{r,echo=FALSE}
+```{r}
 boro_events = 
   tidy_data %>% 
   drop_na(borough, persons_injured, persons_killed) %>%
@@ -167,7 +167,7 @@ ggplotly(boro_events_plot)%>%
 
 *Comments*: 
 
-There is a positive correlation between number of accidents and number killed/injured adjusting for boroughs. In addition, accidents happened in Queens are the most fatal among all boroughs.  
+There is a positive correlation between number of accidents and number killed/injured adjusting for boroughs. In addition, accidents happened in Queens are the most fatal among all boroughs. There are more accidents happen in Queens and Brooklyn, while fewer accidents happen in Staten Island.
 
 ```{r include=FALSE}
 hour_events = 
@@ -188,6 +188,7 @@ hour_events =
   ) 
 ```
 
+### Porportion of accidents by hour
 
 ```{r}
 hour_events_plot =
@@ -216,8 +217,9 @@ hour_events_plotly %>%
 
 *Comments*: 
 
-Most car accidents happen around 5 pm, when people are getting off work. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
-<br />
+More car accidents happens from 8am to 8 pm, when people are on their way to work or getting back home. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
+
+<br>
 
 ### Top 10 Causes of Accident
 
@@ -319,4 +321,4 @@ ggplotly(vehicle_type_plot) %>%
 
 *Comments*: 
 
-Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. The time that collisions are most likely to happen is around eight o’clock in the morning and five o’clock in the afternoon. 
+Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. Two peaks of collisions are around eight o’clock in the morning and five o’clock in the afternoon. 

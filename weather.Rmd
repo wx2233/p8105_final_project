@@ -23,9 +23,9 @@ library(animation)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
-	fig.width = 8, 
+	fig.width = 10, 
   fig.height = 6,
-  out.width = "90%"
+  out.width = "80%"
 )
 options(
   ggplot2.continuous.colour = "viridis",
@@ -180,8 +180,8 @@ daily_weather_collision %>%
   geom_boxplot(alpha = 0.5) + 
   labs(
     color = "type",
-    title = sprintf("Number when rain is %s",i),
-    y = "Number",
+    title = sprintf("Accident Number when rain is %s",i),
+    y = "Accident Number",
     x = "Hour"
     ) +
   ylim(0,100) +
@@ -191,7 +191,7 @@ saveGIF({
   {
     print(daily_weather_plot(i))
   }
-}, movie.name = "weather.gif", ani.width = 600, ani.height = 600
+}, movie.name = "weather.gif", ani.width = 700, ani.height = 600
 )
 ```
 
@@ -203,7 +203,7 @@ Extreme accidents happen during heavy/moderate precipitation as compared to ligh
 
 ### Number of Accident by Weather
 
-```{r}
+```{r out.width= "90%"}
 weather_type_plot =  
 collision_weather %>% 
   group_by(weathertype) %>% 
@@ -222,9 +222,12 @@ collision_weather %>%
     y = "Number of Accident",
     x = "Weather Type"
     )
-ggplotly(weather_type_plot)
+ggplotly(weather_type_plot) %>% 
+  layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.3, y = -0.2))  
 ```
 
 *Comments:* 
 
 It is surprising to see that sunny weather is the third most common weather type when car accidents tend to happen. On the other hand, people might be going outside more on sunny days, which can cause an increase in car accidents. Accident number in this plot is strongly related to how likely people will go out under different weather conditions. More people being outside means more accidents. 
+
