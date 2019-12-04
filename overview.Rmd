@@ -124,7 +124,7 @@ ggplotly(plot_day) %>%
                      x = 0.2, y = -0.2))  
 ```
 
-*Comments*: 
+*Comments*:
 
 There is a steady trend over the year of 2018. Except that an outlier for accident number is observed around November. Aftering some additional exploration, we found that it's 15 Nov 2018. We looked into this date and discovered that it is the date of a severe winter storm in New York, which can explain the sudden increase in accident number. 
 
@@ -177,6 +177,7 @@ hour_events_plotly %>%
                        x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"),
           legend = list(orientation = "h",   # show entries horizontally
                      x = 0.3, y = -0.2))
+#
          
 
 ```
