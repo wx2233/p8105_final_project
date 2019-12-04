@@ -121,7 +121,7 @@ plot_kill_injured_day
 
 *Comments*: 
 
-There is a steady trend over the year of 2018. Except that an outlier for accident number is observed around November, which is on 15 Nov 2018. We looked into this date and discovered that it is the date of a severe winter storm in New York, which explains the sudden increase in accident number. 
+There is a steady trend over the year of 2018. Except that an outlier for accident number is observed around November. Aftering some additional exploration, we found that it's 15 Nov 2018. We looked into this date and discovered that it is the date of a severe winter storm in New York, which can explain the sudden increase in accident number. 
 
 **A video of the winter storm that day can be found at [windstorm](https://www.youtube.com/watch?v=4mLuO9BYPfU) **
 
@@ -162,7 +162,7 @@ ggplotly(boro_events_plot)
 
 *Comments*: 
 
-There is a positive correlation between number of accidents and number killed/injured adjusting for borough. Accidents happened in Queens are the most fatal among all boroughs. 
+There is a positive correlation between number of accidents and number killed/injured adjusting for boroughs. In addition, accidents happened in Queens are the most fatal among all boroughs.  
 
 ```{r include=FALSE}
 hour_events = 
@@ -205,8 +205,8 @@ hour_events_plot
 
 *Comments*: 
 
-Most car accidents happen around 5 pm, when people are getting off work. Although less accidents are around 7 in the morning and 9 at night, they are the most fatal ones (because the killed proportion surpass the accident proportion line). This might be due to fatigue driving.
-
+Most car accidents happen around 5 pm, when people are getting off work. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
+<br />
 
 ### Top 10 Causes of Accident
 
@@ -269,7 +269,9 @@ cause_by_boro_plotly %>%
 
 *Comments*: 
 
-Try not to follow too closely while driving, since it’s the most common causal factor for collisions. When driving in Manhattan, be especially careful when passing or changing lanes as those factors contributes to around 30% of all accidents in Manhattan. 
+Try not to follow too closely while driving, since it’s the most common causal factor for collisions overall. When driving in Manhattan, be especially careful when passing or changing lanes as those factors contributes to around 30% of all accidents in Manhattanm and is a lot higher compare to other boroughs. 
+
+<br />
 
 ### Collisions of Day for Different Vehicles
 
