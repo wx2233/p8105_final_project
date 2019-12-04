@@ -448,7 +448,7 @@ div.tocify {
 <div id="result" class="section level3">
 <h3>Result</h3>
 <div id="correlation-matrix" class="section level4">
-<h4>1. Correlation Matrix**</h4>
+<h4>1. Correlation Matrix</h4>
 <pre class="r"><code>cor_data = 
   cor(cbind(collisionnumber = pull(boro_daytime_weather_light_vt_hol,collisionnumber),
         model.matrix(collisionnumber ~ borough + daytime + weathertype + num_light+ num_signal + vehicle + holiday +prep, boro_daytime_weather_light_vt_hol)[,-1])
@@ -461,7 +461,7 @@ cor_data %&gt;%
 <p><br></p>
 </div>
 <div id="box-cox-transformation" class="section level4">
-<h4>2. Box-Cox Transformation**</h4>
+<h4>2. Box-Cox Transformation</h4>
 <pre class="r"><code>fit2 = lm(collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
 MASS::boxcox(fit2)</code></pre>
 <p><img src="Regression_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /></p>
@@ -469,7 +469,7 @@ MASS::boxcox(fit2)</code></pre>
 <p><br></p>
 </div>
 <div id="mlr-result" class="section level4">
-<h4>3. MLR result**</h4>
+<h4>3. MLR result</h4>
 <pre class="r"><code>boro_daytime_weather_light_vt_hol = boro_daytime_weather_light_vt_hol %&gt;%
   mutate(ln_collisionnumber = log(collisionnumber, base = exp(1)))
 fit2 = lm(ln_collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 

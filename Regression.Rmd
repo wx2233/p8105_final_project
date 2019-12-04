@@ -248,7 +248,7 @@ In this research, we try to find relationship between collision and several fact
 
 ### Result
 
-#### 1. Correlation Matrix**
+#### 1. Correlation Matrix
 
 ```{r}
 cor_data = 
@@ -264,7 +264,7 @@ Correlation between most variables is acceptable, but relationship between weath
 
 <br>
 
-#### 2. Box-Cox Transformation**
+#### 2. Box-Cox Transformation
 
 ```{r fig.width = 9, fig.height = 6,out.width= "60%", fig.align = 'center'}
 fit2 = lm(collisionnumber ~ borough + factor(daytime) + weathertype + num_light + num_signal + factor(prep) + vehicle + holiday, data = boro_daytime_weather_light_vt_hol) 
@@ -275,7 +275,7 @@ Box-Cox method applies a transformation by raising Y to different power, as we c
 
 <br>
 
-#### 3. MLR result**
+#### 3. MLR result
 
 ```{r}
 boro_daytime_weather_light_vt_hol = boro_daytime_weather_light_vt_hol %>%
