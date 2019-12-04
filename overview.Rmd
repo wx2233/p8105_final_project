@@ -69,7 +69,7 @@ data_2018_seperate = tidy_data
 <br>
 
 
-### Accident During the Day
+### Accident Trend Over the Year
 
 ```{r include=FALSE}
 data_acci_day = tidy_data %>% 
