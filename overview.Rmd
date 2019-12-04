@@ -129,6 +129,61 @@ There is a steady trend over the year of 2018. Except that an outlier for accide
 
 <br>
 
+
+```{r include=FALSE}
+hour_events = 
+  tidy_data %>% 
+  drop_na(hour, persons_injured, persons_killed) %>%
+  group_by(hour) %>%
+  summarize(accident = n(),
+            injured = sum(persons_injured),
+            killed = sum(persons_killed)) %>%
+  mutate(prop_accident = round(accident/sum(accident),4),
+         prop_injured = round(injured/sum(injured),4),
+         prop_killed = round(killed/sum(killed),4)) %>%
+  pivot_longer(
+    prop_accident:prop_killed,
+    values_to = "proportion",
+    names_prefix = "prop_",
+    names_to = "type",
+  ) 
+```
+
+<br>
+
+### Porportion of accidents by hour
+
+```{r}
+hour_events_plot =
+hour_events %>% 
+  ggplot(aes(x = hour, y = proportion, color = type)) +
+  geom_line() +
+  annotate("rect", xmin = 8, xmax = 20, ymin = 0, ymax = Inf, fill = "blue", alpha = .1) +
+  labs(
+    title = "Proportion of Accident and Injured People by Hour", 
+    x =  'Hour',
+    y = 'Proportion') +
+  theme( legend.title = element_blank() )
+
+hour_events_plotly = ggplotly(hour_events_plot)
+hour_events_plotly[['x']][['layout']][['shapes']] <- c()
+
+hour_events_plotly %>%  
+  layout( shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"),
+                       opacity = 0.3, 
+                       x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"),
+          legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.3, y = -0.2))
+         
+
+```
+
+*Comments*: 
+
+More car accidents happens from 8am to 8 pm, when people are on their way to work or getting back home. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
+
+<br>
+
 ### Proportion of Accident by Borough
 
 ```{r}
@@ -168,95 +223,6 @@ ggplotly(boro_events_plot)%>%
 *Comments*: 
 
 There is a positive correlation between number of accidents and number killed/injured adjusting for boroughs. In addition, accidents happened in Queens are the most fatal among all boroughs. There are more accidents happen in Queens and Brooklyn, while fewer accidents happen in Staten Island.
-
-```{r include=FALSE}
-hour_events = 
-  tidy_data %>% 
-  drop_na(hour, persons_injured, persons_killed) %>%
-  group_by(hour) %>%
-  summarize(accident = n(),
-            injured = sum(persons_injured),
-            killed = sum(persons_killed)) %>%
-  mutate(prop_accident = round(accident/sum(accident),4),
-         prop_injured = round(injured/sum(injured),4),
-         prop_killed = round(killed/sum(killed),4)) %>%
-  pivot_longer(
-    prop_accident:prop_killed,
-    values_to = "proportion",
-    names_prefix = "prop_",
-    names_to = "type",
-  ) 
-```
-
-### Porportion of accidents by hour
-
-```{r}
-hour_events_plot =
-hour_events %>% 
-  ggplot(aes(x = hour, y = proportion, color = type)) +
-  geom_line() +
-  annotate("rect", xmin = 8, xmax = 20, ymin = 0, ymax = Inf, fill = "blue", alpha = .1) +
-  labs(
-    title = "Proportion of Accident and Injured People by Hour", 
-    x =  'Hour',
-    y = 'Proportion') +
-  theme( legend.title = element_blank() )
-
-hour_events_plotly = ggplotly(hour_events_plot)
-hour_events_plotly[['x']][['layout']][['shapes']] <- c()
-
-hour_events_plotly %>%  
-  layout( shapes = list(type = "rect", fillcolor = "pink", line = list(color = "pink"),
-                       opacity = 0.3, 
-                       x0 = 8, x1 = 20, xref = "x", y0 = 0, y1 = 0.08, yref = "y"),
-          legend = list(orientation = "h",   # show entries horizontally
-                     x = 0.3, y = -0.2))
-         
-
-```
-
-*Comments*: 
-
-More car accidents happens from 8am to 8 pm, when people are on their way to work or getting back home. Although less accidents are around 7 am and 9 pm, those are the most fatal ones (because the killed proportion surpass the accident proportion line). We think this might be caused by fatigue driving, because it's early in the morning and at night. 
-
-<br>
-
-### Collisions of Day for Different Vehicles
-
-```{r include=FALSE}
-vehicle_type_data = 
-  tidy_data %>% 
-  mutate(
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
-    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
-    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
-  group_by(vehicle_type,hour) %>% 
-  summarize(
-    number = n()
-  )
-```
-
-```{r}
-vehicle_type_plot = 
-vehicle_type_data %>% 
-  ggplot(aes(x = hour, y = number, color = vehicle_type)) +
-  geom_line() +
-  labs(
-    color = "vehicle type",
-    title = "Collisions of Day for Different Vehicles",
-    x = "Hour of Day",
-    y = "Number of Collisions"
-    ) +
-  theme(legend.title = element_blank())
-
-ggplotly(vehicle_type_plot) %>% 
-    layout(legend = list(orientation = "h",   # show entries horizontally
-                     x = 0.4, y = -0.2))  
-```
-
-*Comments*: 
-
-Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. Two peaks of collisions are around eight o’clock in the morning and five o’clock in the afternoon. 
 
 <br>
 
@@ -323,4 +289,41 @@ ggplotly(cause_by_boro_plot)  %>%
 
 Try not to follow too closely while driving, since it’s the most common causal factor for collisions overall. When driving in Manhattan, be especially careful when passing or changing lanes as those factors contributes to around 30% of all accidents in Manhattanm and is a lot higher compare to other boroughs. 
 
+<br>
 
+### Collisions of Day for Different Vehicles
+
+```{r include=FALSE}
+vehicle_type_data = 
+  tidy_data %>% 
+  mutate(
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"truck"),"truck"),
+    vehicle_type = replace(vehicle_type,str_detect(vehicle_type,"sport utility"),"sport utility vehicle"),
+    vehicle_type = replace(vehicle_type, vehicle_type %in% c("taxi","passenger vehicle","sedan","truck","sport utility vehicle") == FALSE, "others")) %>% 
+  group_by(vehicle_type,hour) %>% 
+  summarize(
+    number = n()
+  )
+```
+
+```{r}
+vehicle_type_plot = 
+vehicle_type_data %>% 
+  ggplot(aes(x = hour, y = number, color = vehicle_type)) +
+  geom_line() +
+  labs(
+    color = "vehicle type",
+    title = "Collisions of Day for Different Vehicles",
+    x = "Hour of Day",
+    y = "Number of Collisions"
+    ) +
+  theme(legend.title = element_blank())
+
+ggplotly(vehicle_type_plot) %>% 
+    layout(legend = list(orientation = "h",   # show entries horizontally
+                     x = 0.4, y = -0.2))  
+```
+
+*Comments*: 
+
+Four most common vehicle types were chosen to be tested. Sport utility vehicle has the highest collisions number per day, followed by passenger vehicle. Two peaks of collisions are around eight o’clock in the morning and five o’clock in the afternoon. 
