@@ -7,7 +7,7 @@ output:
 ---
 
 <center>
-<img src="image/about.jpg" style="width:100%">
+<img src="image/about.jpg" style="width:80%">
 </center>
 
 <br>
@@ -47,7 +47,7 @@ Data on ***U.S legal holidays*** was taken from the [Federal Holidays](https://w
 The screencast below clearly shows the background, moethod, result and conclusion of our project.
 
 <center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/RDvGwWrEWo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=_hGgSavPf9o" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </center>
 
 <br>
